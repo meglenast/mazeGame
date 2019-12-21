@@ -1,0 +1,31 @@
+#pragma once
+
+#include "Coordinates.h"
+
+enum RACE_CHOICE
+{
+	INVALID = 0,
+	ENCHANTER,
+	MAGUS
+};
+
+class Race
+{
+private:
+	RACE_CHOICE race;
+	Coordinates position;
+public:
+	Race(RACE_CHOICE = INVALID, int = -1, int = -1);
+	virtual ~Race() = default;
+	Race(const Race&) = default;
+	Race& operator=(const Race&) = default;
+public:
+	const Coordinates& getPosition()const;
+	RACE_CHOICE getRace()const;
+
+	void setPosition(int, int);
+private:
+	/*
+	 ...
+	*/
+};
