@@ -6,7 +6,7 @@
 class Enchanter : public Race
 {
 public:
-	Enchanter(RACE_CHOICE = ENCHANTER, int = -1, int = -1);
+	Enchanter(RACE_CHOICE = ENCHANTER/*, int = -1, int = -1*/);
 
 public:
 	//bool validMove(int, int)const;

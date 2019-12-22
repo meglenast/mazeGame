@@ -8,7 +8,8 @@ enum POS_TYPE
 	EMPTY = 0,
 	BLOCKED,
 	START,
-	PORTAL
+	PORTAL,
+	UNDEFINED
 };
 
 class Position
@@ -17,8 +18,10 @@ private:
 	Race* character;
 	Monster* monster;
 	POS_TYPE position_type;
+	Coordinates coordinates;
+
 public:
-	Position(Race* = nullptr, Monster* = nullptr, POS_TYPE = EMPTY);
+	Position(Race* = nullptr, Monster* = nullptr, POS_TYPE = EMPTY, Coordinates = { 0,0 });
 	~Position() = default;
 	Position(const Position&) = default;
 	Position& operator=(const Position&) = default;
@@ -26,6 +29,7 @@ public:
 	bool occupiedByMonster()const;
 	bool occupiedByCharacter()const;
 	POS_TYPE getPositionType()const;
+	Coordinates getCoordinates()const;
 
 
 };

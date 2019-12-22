@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="Coordinates.h" />
     <ClInclude Include="Enchanter.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="Maze.h" />
     <ClInclude Include="Magus.h" />
     <ClInclude Include="Monster.h" />
@@ -148,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Enchanter.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="Magus.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Maze.cpp" />
