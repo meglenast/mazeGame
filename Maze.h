@@ -4,6 +4,7 @@
 #include <queue>
 
 #include <iostream>
+#include <windows.h>
 
 #include "Position.h"
 using std::vector;
@@ -14,6 +15,9 @@ typedef vector<vector<Position>> MAZE;
 typedef vector<vector<bool>> VISITED_MATRIX;
 
 const int DIRECTIONS = 4;
+
+const char WHITE_SQUARE = 0xDB;
+const char BLACK_SQUARE = 0xFF;
 
 //const Coordinates START = { 1,1 };
 //const Coordinates PORTAL = { n,m};
@@ -45,7 +49,10 @@ public:
 	//bool BFS()const;
 	inline int getSize()const;
 	inline int getMonsters()const;
-
+	void print()const;
+	void printRow(int, char, char)const;
+	void printExtraRow(char, char)const;
+	void printCell(const Position&, char)const;
 	void printMaze()const;
 private:
 	//void initField();

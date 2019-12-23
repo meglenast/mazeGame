@@ -14,9 +14,9 @@ void Game::initGame()
 	initRace();
 	initLevels();
 	printLevels();
-	std::cout << std::endl << std::endl;
-	sortLevels();
-	printLevels();
+	//std::cout << std::endl << std::endl;
+//	sortLevels();
+	//printLevels();
 }
 
 void Game::printLevels()
@@ -26,7 +26,8 @@ void Game::printLevels()
 
 	while (iter != levels.end())
 	{
-		(*iter).printMaze();
+		//(*iter).printMaze();
+		(*iter).print();
 		++iter;
 	}
 }
@@ -141,15 +142,15 @@ void Game::setCell(std::vector<Position>& curr_row, const char cell_value, int r
 {
 	if (cell_value == '.')
 	{
-		curr_row.push_back(Position(nullptr, nullptr, EMPTY, Coordinates(row_index, col_index)));
+		curr_row.push_back(Position(nullptr, nullptr, EMPTY, Coordinates(row_index, col_index), '.'));
 	}
 	else if (cell_value == '#')
 	{
-		curr_row.push_back(Position(nullptr, nullptr, BLOCKED, Coordinates(row_index, col_index)));
+		curr_row.push_back(Position(nullptr, nullptr, BLOCKED, Coordinates(row_index, col_index), '#'));
 	}
 	else
 	{
-		curr_row.push_back(Position(nullptr, nullptr, UNDEFINED, Coordinates(row_index, col_index)));
+		curr_row.push_back(Position(nullptr, nullptr, UNDEFINED, Coordinates(row_index, col_index), '/'));
 	}
 }
 

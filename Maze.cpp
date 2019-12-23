@@ -57,6 +57,97 @@ void Maze::printMaze()const
 	std::cout << "Monsters: "<<monsters<<"\n";
 }
 
+void Maze::print()const
+{
+	//printTitel();
+
+	for (unsigned row_index = 0; row_index < field.size(); ++row_index)
+	{
+		if (row_index % 2 == 0)
+		{
+			printExtraRow(WHITE_SQUARE, BLACK_SQUARE);
+			printRow(row_index, WHITE_SQUARE, BLACK_SQUARE);
+			printExtraRow(WHITE_SQUARE, BLACK_SQUARE);
+		}
+		else
+		{
+			printExtraRow(BLACK_SQUARE, WHITE_SQUARE);
+			printRow(row_index, BLACK_SQUARE, WHITE_SQUARE);
+			printExtraRow(BLACK_SQUARE, WHITE_SQUARE);
+		}
+	}
+}
+
+void Maze::printExtraRow(char col1, char col2)const
+{
+	for (int col_index = 0; col_index < y_size; ++col_index)
+	{
+		if (col_index % 2 == 0)
+		{
+			std::cout << col1 << col1 << col1 << col1 << col1;
+		}
+		else
+		{
+			std::cout << col2 << col2 << col2 << col2<< col2;
+		}
+	}
+	std::cout << std::endl;
+}
+
+void Maze::printRow(int row_index, char col1, char col2)const
+{
+	for (int col_index = 0; col_index < y_size; ++col_index)
+	{
+		if (col_index % 2 == 0)
+		{
+			std::cout << col1 << col1;
+			printCell(field[row_index][col_index], col1);
+			std::cout << col1 << col1;
+		}
+		else
+		{
+			std::cout << col2 << col2;
+			printCell(field[row_index][col_index], col2);
+			std::cout << col2 << col2;
+		}
+	}
+	std::cout << std::endl;
+}
+
+void Maze::printCell(const Position& cell, char col)const
+{
+	if (cell.getPositionType() == EMPTY)
+	{
+		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(color, 3); 
+		std::cout << '.';
+		SetConsoleTextAttribute(color, 7);
+	}
+	else if (cell.getPositionType() == BLOCKED)
+	{
+		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(color, 3);
+		std::cout << '#';
+		SetConsoleTextAttribute(color, 7);
+	}
+	else if (cell.occupiedByCharacter())
+	{
+		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(color, 5);
+		std::cout << 'X';
+		SetConsoleTextAttribute(color, 7);
+	}
+	else if (cell.occupiedByMonster())
+	{
+		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(color, 10);
+		std::cout << 'M';
+		SetConsoleTextAttribute(color, 7);
+	}
+}
+
+
+
 bool Maze::operator<(const Maze& other)const
 {
 	int this_size = (x_size * y_size);
@@ -88,12 +179,6 @@ inline int Maze::getMonsters()const
 {
 	return monsters;
 }
-
-//privat:
-/*void Maze::initField()
-{
-
-}*/
 
 bool Maze::BFS()const
 {
@@ -157,10 +242,8 @@ bool Maze::markedUnvisited(VISITED_MATRIX& visited)const
 			if (col_index == y_size - 1)
 			{
 				visited.push_back(curr_row);
-			}
-			
+			}	
 		}
-		
 	}
 	visited[0][0] = true;
 	return true;
