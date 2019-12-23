@@ -11,6 +11,7 @@ public:
 		xCord = x;
 		yCord = y;
 	}
+	Coordinates(const Coordinates&) = default;
 
 	int getX()const { return xCord; }
 	int getY()const { return yCord; }

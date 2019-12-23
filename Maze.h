@@ -3,6 +3,8 @@
 #include <vector>
 #include <queue>
 
+#include <iostream>
+
 #include "Position.h"
 using std::vector;
 
@@ -35,16 +37,20 @@ public:
 	Maze();
 	Maze(const MAZE&, int, int, int);
 	~Maze() = default;
-	Maze(const Maze&) = default;
-	Maze& operator=(const Maze&) = default;
+	Maze(const Maze&);
+	Maze& operator=(const Maze&);
 public:
 	bool validMazeCheck()const;
+	bool operator<(const Maze&)const;
+	//bool BFS()const;
+	inline int getSize()const;
+	inline int getMonsters()const;
 
-	bool BFS()const;
+	void printMaze()const;
 private:
 	//void initField();
 	
-	//bool BFS()const;
+	bool BFS()const;
 	bool markedUnvisited(VISITED_MATRIX&)const;
 	bool validCellCheck(int,int)const;
 

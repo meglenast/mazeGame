@@ -21,7 +21,7 @@ private:
 	Coordinates coordinates;
 
 public:
-	Position(Race* = nullptr, Monster* = nullptr, POS_TYPE = EMPTY, Coordinates = { 0,0 });
+	Position(Race* = nullptr, Monster* = nullptr, POS_TYPE = UNDEFINED, const Coordinates & = { 0,0 });
 	~Position() = default;
 	Position(const Position&) = default;
 	Position& operator=(const Position&) = default;

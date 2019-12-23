@@ -19,17 +19,25 @@ public:
 	Game();
 public:
 	void initGame();
+
+
+	void printLevels();
 private:
 	void initRace();
 	void initLevels();
+
+	void bubbleSort();
+	void sortLevels();
+	void quickSort(int,int);
+	int partition(int, int)const;
 
 	void printRaceOptions()const;
 	bool validRaceChoice(const std:: string)const;
 	void setRace(const std::string);
 
 	bool readMaze(std::ifstream&);
-	void setCell(std::vector<Position>&, const char)const;
-	void setRow(MAZE&, std::string)const;
+	void setCell(std::vector<Position>&, const char, int, int)const;
+	void setRow(MAZE&, std::string, int)const;
 };
 
 

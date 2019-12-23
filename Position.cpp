@@ -1,10 +1,10 @@
 #include "Position.h"
 
-Position::Position(Race* _character, Monster* _monster, POS_TYPE _position_type, Coordinates coordinates) :
-	character(_character),
-	monster(_monster),
-	position_type(_position_type),
-	coordinates(coordinates)
+Position::Position(Race* race, Monster* monster, POS_TYPE pos_type, const Coordinates& coords) :
+	character(race),
+	monster(monster),
+	position_type(pos_type),
+	coordinates(coords)
 {}
 
 //public:

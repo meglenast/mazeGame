@@ -14,6 +14,23 @@ Maze::Maze(const MAZE& maze, int x_size, int y_size, int monsters):
 	y_size(y_size),
 	monsters(monsters)
 {}
+Maze::Maze(const Maze& other) :
+	field(other.field),
+	x_size(other.x_size),
+	y_size(other.y_size),
+	monsters(other.monsters)
+{}
+Maze& Maze::operator=(const Maze& other)
+{
+	if (this != &other)
+	{
+		field = other.field;
+		x_size = other.x_size;
+		y_size = other.y_size;
+		monsters = other.monsters;
+	}
+	return *this;
+}
 
 //public:
 
@@ -24,6 +41,52 @@ bool Maze::validMazeCheck()const
 	if (!BFS())
 		return false;
 	return true;
+}
+
+void Maze::printMaze()const
+{
+	std::cout << "Size :" << x_size << " " << y_size << "\n";
+	for (size_t row_index = 0; row_index < x_size; ++row_index)
+	{
+		for (size_t col_index = 0; col_index < y_size; ++col_index)
+		{
+			std::cout << field[row_index][col_index].getPositionType();
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "Monsters: "<<monsters<<"\n";
+}
+
+bool Maze::operator<(const Maze& other)const
+{
+	int this_size = (x_size * y_size);
+	int other_size = other.getSize();
+	if (this_size < other_size)
+	{
+		return true;
+	}
+	else if (this_size > other_size)
+	{
+		return false;
+	}
+	else
+	{
+		if (monsters < other.getMonsters())
+		{
+			return true;
+		}
+		return false;
+	}
+}
+
+inline int Maze::getSize()const
+{
+	return (x_size * y_size);
+}
+
+inline int Maze::getMonsters()const
+{
+	return monsters;
 }
 
 //privat:
@@ -56,19 +119,11 @@ bool Maze::BFS()const
 			int new_xCoord = curr.getCoordinates().getX() + DX[direction];
 			int new_yCoord = curr.getCoordinates().getY() + DY[direction];
 
-			if (validCellCheck(new_xCoord, new_yCoord) && !visited[new_xCoord][new_yCoord])//??
+			if (validCellCheck(new_xCoord, new_yCoord) && !visited[new_xCoord][new_yCoord] && field[new_xCoord][new_yCoord].getPositionType()==EMPTY)//??
 			{
-				for (int direction_adj = 0; direction_adj < DIRECTIONS; ++direction_adj)
-				{
-					int newAdj_xCoord = new_xCoord + DX[direction_adj];
-					int newAdj_yCoord = new_yCoord + DY[direction_adj];
-					if (validCellCheck(newAdj_xCoord, newAdj_yCoord) && !visited[newAdj_xCoord][newAdj_yCoord])
-					{
-						//
-						visited[newAdj_xCoord][newAdj_yCoord] = true;
-						queue.push(field[newAdj_xCoord][newAdj_yCoord]);
-					}
-				}
+				visited[new_xCoord][new_yCoord] = true;
+				Position adj_cell(field[new_xCoord][new_yCoord]);
+				queue.push(adj_cell);
 			}
 		}
 	}
