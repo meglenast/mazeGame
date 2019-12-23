@@ -7,6 +7,7 @@
 using std::vector;
 
 
+
 typedef vector<vector<Position>> MAZE;
 typedef vector<vector<bool>> VISITED_MATRIX;
 

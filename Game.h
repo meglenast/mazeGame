@@ -8,7 +8,7 @@
 
 #include "Maze.h"
 
-const char* MAZE_FILE = "mazeFile.txt";
+
 
 class Game
 {
@@ -27,8 +27,9 @@ private:
 	bool validRaceChoice(const std:: string)const;
 	void setRace(const std::string);
 
-	void readMaze(std::ifstream&);
-	void setCell(MAZE&, char, int, int)const;
+	bool readMaze(std::ifstream&);
+	void setCell(std::vector<Position>&, const char)const;
+	void setRow(MAZE&, std::string)const;
 };
 
 

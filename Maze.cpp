@@ -64,6 +64,8 @@ bool Maze::BFS()const
 					int newAdj_yCoord = new_yCoord + DY[direction_adj];
 					if (validCellCheck(newAdj_xCoord, newAdj_yCoord) && !visited[newAdj_xCoord][newAdj_yCoord])
 					{
+						//
+						visited[newAdj_xCoord][newAdj_yCoord] = true;
 						queue.push(field[newAdj_xCoord][newAdj_yCoord]);
 					}
 				}
