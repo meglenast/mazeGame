@@ -14,9 +14,9 @@ void Game::initGame()
 	initRace();
 	initLevels();
 	printLevels();
-	//std::cout << std::endl << std::endl;
-//	sortLevels();
-	//printLevels();
+	std::cout << std::endl << std::endl;
+	sortLevels();
+	printLevels();
 }
 
 void Game::printLevels()
@@ -156,12 +156,7 @@ void Game::setCell(std::vector<Position>& curr_row, const char cell_value, int r
 
 void Game::sortLevels()
 {
-	/*
-	int low = 0;
-	int high = levels.size();
-	quickSort(low,high-1);
-	*/
-	bubbleSort();
+	mergeSort(levels, 0, levels.size() - 1);
 }
 void Game::bubbleSort()
 {
@@ -178,35 +173,64 @@ void Game::bubbleSort()
 		}
 	}
 }
-/*
-void Game::quickSort(int low, int high)
+
+void Game::merge(vector<Maze>& array, int left, int mid, int right)
 {
-	if (low < high)
+	int i, j, k;
+	int n1 = mid - left + 1;
+	int n2 = right - mid;
+
+	std::vector<Maze> leftArr, rightArr;
+
+	for (int i = 0; i < n1; ++i)
 	{
-		int pivot = partition(low, high);
-		quickSort(low, pivot - 1);
-		quickSort(pivot + 1, high);
+		leftArr.push_back(array[left + i]);
 	}
-}
-
-
-int Game::partition(int low, int high)const
-{
-	Maze pivot = levels[high];
-	int smallest_indx = low - 1;
-
-	for (int iter = low; iter <= high - 1; ++iter)
+	for (int j = 0; j < n2; ++j)
 	{
-		if (levels[iter] < pivot)
+		rightArr.push_back(array[mid + 1 + j]);
+	}
+	i = j = 0;
+	k = left;
+
+	while (i < n1 && j < n2)
+	{
+		if (leftArr[i] < rightArr[j])
 		{
-			++smallest_indx;
-			std::swap(levels[smallest_indx],levels[iter]);
+			array[k] = leftArr[i];
+			++i;
 		}
+		else
+		{
+			array[k] = rightArr[j];
+			++j;
+		}
+		++k;
 	}
-	std::swap(levels[smallest_indx + 1], levels[high]);
-	return (smallest_indx + 1);
+	while (i < n1)
+	{
+		array[k] = leftArr[i];
+		++i;
+		++k;
+	}
+	while (j < n2)
+	{
+		array[k] = rightArr[j];
+		++j;
+		++k;
+	}
 }
-*/
+
+void Game::mergeSort(vector<Maze>& array, int left, int right)
+{
+	if (left < right)
+	{
+		int mid = left+(right-1)/2;
+		mergeSort(array, left, mid);
+		mergeSort(array, mid + 1, right);
+		merge(array, left, mid, right);
+	}
+}
 
 //interface funcs. /.../
 void Game::printRaceOptions()const

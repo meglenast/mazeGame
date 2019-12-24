@@ -28,8 +28,8 @@ private:
 
 	void bubbleSort();
 	void sortLevels();
-	void quickSort(int,int);
-	int partition(int, int)const;
+	void mergeSort(vector<Maze>&, int, int);
+	void merge(vector<Maze>&, int, int, int);
 
 	void printRaceOptions()const;
 	bool validRaceChoice(const std:: string)const;
