@@ -3,22 +3,28 @@
 int DX[] = {-1,0,0,1};
 int DY[] = {0,-1,1,0};
 
-Maze::Maze():
+Maze::Maze() :
 	x_size(0),
 	y_size(0),
-	monsters(0)
+	monsters(0),
+	race_choice(INVALID),
+	free_cells(0)
 {}
 Maze::Maze(const MAZE& maze, int x_size, int y_size, int monsters):
 	field(maze),
 	x_size(x_size),
 	y_size(y_size),
-	monsters(monsters)
+	monsters(monsters),
+	race_choice(INVALID),
+	free_cells(0)
 {}
 Maze::Maze(const Maze& other) :
 	field(other.field),
 	x_size(other.x_size),
 	y_size(other.y_size),
-	monsters(other.monsters)
+	monsters(other.monsters),
+	race_choice(other.race_choice),
+	free_cells(other.free_cells)
 {}
 Maze& Maze::operator=(const Maze& other)
 {
@@ -28,11 +34,33 @@ Maze& Maze::operator=(const Maze& other)
 		x_size = other.x_size;
 		y_size = other.y_size;
 		monsters = other.monsters;
+		race_choice = other.race_choice;
+		free_cells = other.free_cells;
 	}
 	return *this;
 }
 
 //public:
+
+void Maze::startLevel()
+{
+	print();
+	while (true)
+	{
+		unsigned cell_to_block = 0;
+		chooseNumCellsToBlock(cell_to_block);
+		chooseWhichCellsToBlock(cell_to_block);
+		if (validMazeCheck())
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "Invalid maze, try again blocking different cells.\n";
+			restartLevel();
+		}
+	}
+}
 
 bool Maze::validMazeCheck()const
 {
@@ -41,6 +69,16 @@ bool Maze::validMazeCheck()const
 	if (!BFS())
 		return false;
 	return true;
+}
+
+void Maze::setFreeCells(unsigned free_cells)
+{
+	this->free_cells = (free_cells - 2 - monsters);
+}
+
+void Maze::setCharacterCell(RACE_CHOICE choice)
+{
+	field[0][0].setCharacter(choice);
 }
 
 void Maze::printMaze()const
@@ -60,7 +98,6 @@ void Maze::printMaze()const
 void Maze::print()const
 {
 	//printTitel();
-
 	for (unsigned row_index = 0; row_index < field.size(); ++row_index)
 	{
 		if (row_index % 2 == 0)
@@ -76,6 +113,8 @@ void Maze::print()const
 			printExtraRow(BLACK_SQUARE, WHITE_SQUARE);
 		}
 	}
+
+	std::cout << "Num of free cells: " << free_cells << std::endl;
 }
 
 void Maze::printExtraRow(char col1, char col2)const
@@ -116,6 +155,22 @@ void Maze::printRow(int row_index, char col1, char col2)const
 
 void Maze::printCell(const Position& cell, char col)const
 {
+	 if (cell.occupiedByCharacter())
+	{
+	HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(color, 5);
+	std::cout << 'X';
+	SetConsoleTextAttribute(color, 7);
+	return;
+	}
+	else if (cell.occupiedByMonster())
+	{
+	HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(color, 10);
+	std::cout << 'M';
+	SetConsoleTextAttribute(color, 7);
+	return;
+	}
 	if (cell.getPositionType() == EMPTY)
 	{
 		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -129,24 +184,8 @@ void Maze::printCell(const Position& cell, char col)const
 		SetConsoleTextAttribute(color, 3);
 		std::cout << '#';
 		SetConsoleTextAttribute(color, 7);
-	}
-	else if (cell.occupiedByCharacter())
-	{
-		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(color, 5);
-		std::cout << 'X';
-		SetConsoleTextAttribute(color, 7);
-	}
-	else if (cell.occupiedByMonster())
-	{
-		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(color, 10);
-		std::cout << 'M';
-		SetConsoleTextAttribute(color, 7);
-	}
+	}	
 }
-
-
 
 bool Maze::operator<(const Maze& other)const
 {
@@ -229,7 +268,7 @@ bool Maze::markedUnvisited(VISITED_MATRIX& visited)const
 		{
 			if (field[row_index][col_index].getPositionType() != EMPTY)
 			{
-				if (field[row_index][col_index].getPositionType() == BLOCKED)
+				if (field[row_index][col_index].getPositionType() == BLOCKED || field[row_index][col_index].getPositionType() == BLOCKED_BY_USER)
 				{
 					curr_row.push_back(true);
 				}
@@ -247,4 +286,115 @@ bool Maze::markedUnvisited(VISITED_MATRIX& visited)const
 	}
 	visited[0][0] = true;
 	return true;
+}
+
+void Maze::initRace(RACE_CHOICE choice)
+{
+	field[0][0].setCharacter(choice);
+	field[0][0].setPositionType(START);
+	field[0][0].setPositionType(PORTAL);
+}
+
+void Maze::chooseNumCellsToBlock(unsigned& cells_to_block)
+{
+	if (free_cells == 0)
+	{
+		std::cout << "There are none free cells to be blocked.\n";
+		return;
+	}
+	while (true)
+	{
+		std::cout << "Choose number of cells to block in this range : [ 0 : " << free_cells << " ]\n";
+		std::cout << "Your choice: ";
+		std::cin >> cells_to_block;
+		if (validCellsToBlock(cells_to_block))
+		{
+			std::cout << "\n";
+			break;
+		}
+		std::cout << "Invalid choice, please try again.\n";
+	}
+}
+
+bool Maze::validCellsToBlock(unsigned cells_to_block)const
+{
+	return (cells_to_block >= 0 && cells_to_block <= free_cells);
+}
+
+void Maze::chooseWhichCellsToBlock(unsigned num_cells)
+{
+	std::cout << "Enter the coordinates of the cells you want to block:\n";
+	for (int i = 0; i < num_cells; ++i)
+	{
+		blockCell();
+	}
+}
+
+bool Maze::onField(int x_coord, int y_coord)const
+{
+	return ((x_coord >= 0 && x_coord <= x_size) && (y_coord >= 0 && y_coord <= y_size));
+}
+
+bool Maze::alreadyBlocked(int x_coord, int y_coord)const
+{
+	return field[x_coord][y_coord].isBlocked();
+}
+
+bool Maze::validCoordinates(int x_coord, int y_coord)const
+{
+	if (!onField(x_coord, y_coord))
+	{
+		std::cout << "Invalid coordinates for this maze.\n";
+		return false;
+	}
+	else if (field[x_coord][y_coord].getPositionType() == START)
+	{
+		std::cout << "Invalid coordinates, you can't block the starting cell of the level.\n";
+		return false;
+	}
+	else if (field[x_coord][y_coord].getPositionType() == PORTAL)
+	{
+		std::cout << "Invalid coordinates, you can't block the portal to the next level.\n";
+		return false;
+	}
+	else if (alreadyBlocked(x_coord, y_coord))
+	{
+		std::cout << "Invalid coordinates, the cell is already blocked.\n";
+		return false;
+	}
+	else
+		return true;
+}
+
+void Maze::blockCell()
+{
+	int x_coord, y_coord;
+	while (true)
+	{
+		std::cout << "x coordinate: ";
+		std::cin >> x_coord;
+		std::cout << std::endl;
+		std::cout << "y coordinate: ";
+		std::cin >> y_coord;
+		std::cout << std::endl;
+		if (validCoordinates(x_coord, y_coord))
+		{
+			field[x_coord][y_coord].setPositionType(BLOCKED_BY_USER);
+			break;
+		}
+	}
+}
+
+void Maze::restartLevel()
+{
+	for (unsigned row_index = 0; row_index < x_size; ++row_index)
+	{
+		for (unsigned col_index = 0; col_index < y_size; ++col_index)
+		{
+			if (field[row_index][col_index].getPositionType() == BLOCKED_BY_USER)
+			{
+				field[row_index][col_index].setPositionType(EMPTY);
+			}
+		}
+	}
 }

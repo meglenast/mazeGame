@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "Position.h"
+
 using std::vector;
 
 
@@ -34,7 +35,8 @@ private:
 	int x_size;
 	int y_size;
 	int monsters;
-
+	RACE_CHOICE race_choice;
+	unsigned free_cells;
 	//Coordinates start;  //idk if i need this t.t
 	//Coordinates portal;// this too
 public:
@@ -46,19 +48,39 @@ public:
 public:
 	bool validMazeCheck()const;
 	bool operator<(const Maze&)const;
-	//bool BFS()const;
+
 	inline int getSize()const;
 	inline int getMonsters()const;
-	void print()const;
-	void printRow(int, char, char)const;
-	void printExtraRow(char, char)const;
-	void printCell(const Position&, char)const;
-	void printMaze()const;
-private:
-	//void initField();
+
+	void print()const;//move after in private
+
+	void setCharacterCell(RACE_CHOICE);
+	void startLevel();
+
+	void setFreeCells(unsigned);
+
+	void initRace(RACE_CHOICE);
 	
+
+private:
+	//void initRace();
+	void restartLevel();
+
 	bool BFS()const;
 	bool markedUnvisited(VISITED_MATRIX&)const;
 	bool validCellCheck(int,int)const;
 
+	void printRow(int, char, char)const;
+	void printExtraRow(char, char)const;
+	void printCell(const Position&, char)const;
+	void printMaze()const;
+
+	void chooseNumCellsToBlock(unsigned&);
+	void chooseWhichCellsToBlock(unsigned);
+	bool validCellsToBlock(unsigned)const;
+	void blockCell();
+
+	bool validCoordinates(int, int)const;
+	bool onField(int, int)const;
+	bool alreadyBlocked(int, int)const;
 };
