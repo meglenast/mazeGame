@@ -20,6 +20,11 @@ bool Position::occupiedByCharacter()const
 	return character != nullptr;
 }
 
+bool Position::isBlocked()const
+{
+	return position_type == BLOCKED;
+}
+
 POS_TYPE Position::getPositionType()const
 {
 	return position_type;
@@ -28,4 +33,22 @@ POS_TYPE Position::getPositionType()const
 Coordinates Position::getCoordinates()const
 {
 	return coordinates;
+}
+
+void Position::setCharacter(RACE_CHOICE choice)
+{
+	if (choice == ENCHANTER)
+	{
+		character = new Enchanter;
+	}
+	else
+	{
+		character = new Magus;
+
+	}
+}
+
+void Position::setPositionType(POS_TYPE pos_type)
+{
+	position_type = pos_type;
 }

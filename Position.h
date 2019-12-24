@@ -1,12 +1,14 @@
 #pragma once
 
-#include "Race.h"
+#include "Enchanter.h"
+#include "Magus.h"
 #include "Monster.h"
 
 enum POS_TYPE
 {
 	EMPTY = 0,
 	BLOCKED,
+	BLOCKED_BY_USER,
 	START,
 	PORTAL,
 	UNDEFINED
@@ -29,8 +31,12 @@ public:
 public:
 	bool occupiedByMonster()const;
 	bool occupiedByCharacter()const;
+	bool isBlocked()const;
 	POS_TYPE getPositionType()const;
 	Coordinates getCoordinates()const;
+
+	void setCharacter(RACE_CHOICE);
+	void setPositionType(POS_TYPE);
 
 
 };
