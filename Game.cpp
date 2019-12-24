@@ -11,12 +11,10 @@ Game::Game() :
 
 void Game::initGame()
 {
-	initRace();
 	initLevels();
-	printLevels();
-	std::cout << std::endl << std::endl;
 	sortLevels();
-	printLevels();
+	initRace();
+	startGame();
 }
 
 void Game::printLevels()
@@ -26,7 +24,6 @@ void Game::printLevels()
 
 	while (iter != levels.end())
 	{
-		//(*iter).printMaze();
 		(*iter).print();
 		++iter;
 	}
@@ -34,44 +31,13 @@ void Game::printLevels()
 
 //private:
 
-void Game::initRace()
+void Game::startGame()
 {
-	std::string choice;
-	while (true)
+	for (unsigned levels_cnt = 0; levels_cnt < levels.size(); ++levels_cnt)
 	{
-		std::cout << "		--Choose your race--\n";
-		printRaceOptions();
-		std::cout << "Your chooice: ";
-		std::cin >> choice;
-		if (!validRaceChoice(choice))
-		{
-			std::cout << "Invalid choice, please try again.\n";
-		}
-		else
-		{
-			break;
-		}
-	}	
-	setRace(choice);
-}
-
-void Game::setRace(const std::string race_input)
-{
-	
-	if (!race_input.compare("ENCHANTER") || !race_input.compare("enchanter"))
-	{
-		race_choice = ENCHANTER;
+		levels[levels_cnt].setCharacterCell(race_choice.getRace());
+		levels[levels_cnt].startLevel();
 	}
-	else if (!race_input.compare("MAGUS") || !race_input.compare("magus"))
-	{
-		race_choice = MAGUS;
-	}
-	
-}
-
-bool Game::validRaceChoice(const std::string choice)const
-{
-	return (!choice.compare("ENCHANTER") || !choice.compare("enchanter") || !choice.compare("MAGUS") || !choice.compare("magus"));
 }
 
 void Game::initLevels()
@@ -98,6 +64,7 @@ bool Game::readMaze(std::ifstream& file_name)
 {
 	int x_size, y_size, monsters;
 	file_name >> x_size;
+	unsigned free_cells_cnt = 0;
 
 	if (file_name.eof())
 	{
@@ -114,35 +81,39 @@ bool Game::readMaze(std::ifstream& file_name)
 	for (unsigned row_index = 0; row_index < x_size; ++row_index)
 	{
 		std::getline(file_name, curr_row);
-		setRow(temp, curr_row, row_index);
+		setRow(temp, curr_row, row_index, free_cells_cnt);
 	}
 
 	file_name >> monsters;
 	Maze temp_maze(temp, x_size, y_size, monsters);
 
 	if (temp_maze.validMazeCheck())
+	{
+		temp_maze.setFreeCells(free_cells_cnt);
 		levels.push_back(temp_maze);
+	}
 
 	std::getline(file_name, curr_row);
 
 	return true;
 }
 
-void Game::setRow(MAZE& maze, std::string row, int row_index)const
+void Game::setRow(MAZE& maze, std::string row, int row_index, unsigned& free_cells_cnt)const
 {
 	std::vector<Position> curr_row;
 	for (unsigned col_index = 0; col_index < row.length(); ++col_index)
 	{
-		setCell(curr_row, row[col_index], row_index, col_index);
+		setCell(curr_row, row[col_index], row_index, col_index, free_cells_cnt);
 	}
 	maze.push_back(curr_row);
 }
 
-void Game::setCell(std::vector<Position>& curr_row, const char cell_value, int row_index, int col_index)const
+void Game::setCell(std::vector<Position>& curr_row, const char cell_value, int row_index, int col_index, unsigned& free_cells_cnt)const
 {
 	if (cell_value == '.')
 	{
 		curr_row.push_back(Position(nullptr, nullptr, EMPTY, Coordinates(row_index, col_index), '.'));
+		++free_cells_cnt;
 	}
 	else if (cell_value == '#')
 	{
@@ -232,14 +203,47 @@ void Game::mergeSort(vector<Maze>& array, int left, int right)
 	}
 }
 
-//interface funcs. /.../
+void Game::initRace()
+{
+	std::string choice;
+	while (true)
+	{
+		std::cout << "		--Choose your race--\n";
+		printRaceOptions();
+		std::cout << "Your chooice: ";
+		std::cin >> choice;
+		if (!validRaceChoice(choice))
+		{
+			std::cout << "Invalid choice, please try again.\n";
+		}
+		else
+		{
+			break;
+		}
+	}
+	setRace(choice);
+}
+
+void Game::setRace(const std::string race_input)
+{
+
+	if (!race_input.compare("ENCHANTER") || !race_input.compare("enchanter"))
+	{
+		race_choice = ENCHANTER;
+	}
+	else if (!race_input.compare("MAGUS") || !race_input.compare("magus"))
+	{
+		race_choice = MAGUS;
+	}
+}
+
+bool Game::validRaceChoice(const std::string choice)const
+{
+	return (!choice.compare("ENCHANTER") || !choice.compare("enchanter") || !choice.compare("MAGUS") || !choice.compare("magus"));
+}
+
 void Game::printRaceOptions()const
 {
-	/*for(RACE_CHOICE i = ENCHANTER; i < RACE_COUNTER; ++i)
-	{
-	}
-	*/
-	std::cout << "->ENCHANTER\n" << "->MAGUS\n";
-
-
+	std::cout << "		__RACE CHOICES:__\n";
+	std::cout << "-ENCHANTER\n-MAGUS\n";
 }

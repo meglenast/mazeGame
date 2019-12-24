@@ -19,11 +19,12 @@ public:
 	Game();
 public:
 	void initGame();
+	void initRace();
 
 
 	void printLevels();
 private:
-	void initRace();
+	void startGame();
 	void initLevels();
 
 	void bubbleSort();
@@ -31,13 +32,16 @@ private:
 	void mergeSort(vector<Maze>&, int, int);
 	void merge(vector<Maze>&, int, int, int);
 
-	void printRaceOptions()const;
-	bool validRaceChoice(const std:: string)const;
-	void setRace(const std::string);
 
 	bool readMaze(std::ifstream&);
-	void setCell(std::vector<Position>&, const char, int, int)const;
-	void setRow(MAZE&, std::string, int)const;
+	void setCell(std::vector<Position>&, const char, int, int, unsigned&)const;
+	void setRow(MAZE&, std::string, int,unsigned&)const;
+
+
+	void printRaceOptions()const;
+	bool validRaceChoice(const std::string)const;
+	void setRace(const std::string);
+	void setPlayersCell(RACE_CHOICE);
 };
 
 
