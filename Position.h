@@ -36,6 +36,7 @@ public:
 	Coordinates getCoordinates()const;
 
 	void setCharacter(RACE_CHOICE);
+	void setMonster(unsigned, unsigned);
 	void setPositionType(POS_TYPE);
 
 

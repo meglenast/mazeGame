@@ -8,6 +8,9 @@ Position::Position(Race* race, Monster* monster, POS_TYPE pos_type, const Coordi
 	symbol(symbol)
 {}
 
+
+//destructor!!!
+
 //public:
 
 bool Position::occupiedByMonster()const
@@ -46,6 +49,11 @@ void Position::setCharacter(RACE_CHOICE choice)
 		character = new Magus;
 
 	}
+}
+
+void Position::setMonster(unsigned x_coord, unsigned y_coord)
+{
+	monster = new Monster(x_coord, y_coord);
 }
 
 void Position::setPositionType(POS_TYPE pos_type)

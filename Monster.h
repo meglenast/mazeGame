@@ -7,6 +7,6 @@ class Monster
 private:
 	Coordinates position;
 public:
-	Monster(int, int);
+	Monster(int= -1, int = -1);
 
 };
