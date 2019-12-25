@@ -36,6 +36,8 @@ void Game::startGame()
 	for (unsigned levels_cnt = 0; levels_cnt < levels.size(); ++levels_cnt)
 	{
 		levels[levels_cnt].setCharacterCell(race_choice.getRace());
+		levels[levels_cnt].setStartAndPortal();
+		//levels[levels_cnt].initRace(race_choice.getRace());  //portal isues
 		levels[levels_cnt].startLevel();
 	}
 }

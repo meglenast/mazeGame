@@ -4,6 +4,7 @@
 #include <queue>
 
 #include <iostream>
+#include <ctime>
 #include <windows.h>
 
 #include "Position.h"
@@ -59,12 +60,16 @@ public:
 
 	void setFreeCells(unsigned);
 
-	void initRace(RACE_CHOICE);
+	void setStartAndPortal();
 	
 
 private:
 	//void initRace();
 	void restartLevel();
+
+	void spawnMonsters();
+	void spawnMonster();
+	bool canSpawn(unsigned, unsigned)const;
 
 	bool BFS()const;
 	bool markedUnvisited(VISITED_MATRIX&)const;
@@ -81,6 +86,5 @@ private:
 	void blockCell();
 
 	bool validCoordinates(int, int)const;
-	bool onField(int, int)const;
 	bool alreadyBlocked(int, int)const;
 };

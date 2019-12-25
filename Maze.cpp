@@ -60,6 +60,8 @@ void Maze::startLevel()
 			restartLevel();
 		}
 	}
+	spawnMonsters();
+	print();
 }
 
 bool Maze::validMazeCheck()const
@@ -178,13 +180,20 @@ void Maze::printCell(const Position& cell, char col)const
 		std::cout << '.';
 		SetConsoleTextAttribute(color, 7);
 	}
-	else if (cell.getPositionType() == BLOCKED)
+	else if (cell.getPositionType() == BLOCKED || cell.getPositionType() == BLOCKED_BY_USER)
 	{
 		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(color, 3);
 		std::cout << '#';
 		SetConsoleTextAttribute(color, 7);
-	}	
+	}
+	else if(cell.getPositionType() == PORTAL)
+	{
+		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(color, 3);
+		std::cout << '@';
+		SetConsoleTextAttribute(color, 7);
+	}
 }
 
 bool Maze::operator<(const Maze& other)const
@@ -243,7 +252,7 @@ bool Maze::BFS()const
 			int new_xCoord = curr.getCoordinates().getX() + DX[direction];
 			int new_yCoord = curr.getCoordinates().getY() + DY[direction];
 
-			if (validCellCheck(new_xCoord, new_yCoord) && !visited[new_xCoord][new_yCoord] && field[new_xCoord][new_yCoord].getPositionType()==EMPTY)//??
+			if (validCellCheck(new_xCoord, new_yCoord) && !visited[new_xCoord][new_yCoord] && (field[new_xCoord][new_yCoord].getPositionType()==EMPTY || field[new_xCoord][new_yCoord].getPositionType() == PORTAL))//??
 			{
 				visited[new_xCoord][new_yCoord] = true;
 				Position adj_cell(field[new_xCoord][new_yCoord]);
@@ -266,13 +275,13 @@ bool Maze::markedUnvisited(VISITED_MATRIX& visited)const
 		vector<bool> curr_row;
 		for (int col_index = 0; col_index < y_size; ++col_index)
 		{
-			if (field[row_index][col_index].getPositionType() != EMPTY)
+			if (field[row_index][col_index].getPositionType() != EMPTY || field[row_index][col_index].getPositionType() == PORTAL || field[row_index][col_index].getPositionType() == START)
 			{
 				if (field[row_index][col_index].getPositionType() == BLOCKED || field[row_index][col_index].getPositionType() == BLOCKED_BY_USER)
 				{
 					curr_row.push_back(true);
 				}
-				else
+				else if (field[row_index][col_index].getPositionType() == UNDEFINED)
 				{
 					return false;
 				}
@@ -288,11 +297,10 @@ bool Maze::markedUnvisited(VISITED_MATRIX& visited)const
 	return true;
 }
 
-void Maze::initRace(RACE_CHOICE choice)
+void Maze::setStartAndPortal()
 {
-	field[0][0].setCharacter(choice);
 	field[0][0].setPositionType(START);
-	field[0][0].setPositionType(PORTAL);
+	field[x_size-1][y_size-1].setPositionType(PORTAL);
 }
 
 void Maze::chooseNumCellsToBlock(unsigned& cells_to_block)
@@ -307,6 +315,7 @@ void Maze::chooseNumCellsToBlock(unsigned& cells_to_block)
 		std::cout << "Choose number of cells to block in this range : [ 0 : " << free_cells << " ]\n";
 		std::cout << "Your choice: ";
 		std::cin >> cells_to_block;
+		if (cells_to_block == 0) break;//put in other place later
 		if (validCellsToBlock(cells_to_block))
 		{
 			std::cout << "\n";
@@ -323,16 +332,10 @@ bool Maze::validCellsToBlock(unsigned cells_to_block)const
 
 void Maze::chooseWhichCellsToBlock(unsigned num_cells)
 {
-	std::cout << "Enter the coordinates of the cells you want to block:\n";
 	for (int i = 0; i < num_cells; ++i)
 	{
 		blockCell();
 	}
-}
-
-bool Maze::onField(int x_coord, int y_coord)const
-{
-	return ((x_coord >= 0 && x_coord <= x_size) && (y_coord >= 0 && y_coord <= y_size));
 }
 
 bool Maze::alreadyBlocked(int x_coord, int y_coord)const
@@ -342,7 +345,7 @@ bool Maze::alreadyBlocked(int x_coord, int y_coord)const
 
 bool Maze::validCoordinates(int x_coord, int y_coord)const
 {
-	if (!onField(x_coord, y_coord))
+	if (!validCellCheck(x_coord, y_coord))
 	{
 		std::cout << "Invalid coordinates for this maze.\n";
 		return false;
@@ -368,6 +371,7 @@ bool Maze::validCoordinates(int x_coord, int y_coord)const
 
 void Maze::blockCell()
 {
+	std::cout << "Enter the coordinates of the cells you want to block:\n";
 	int x_coord, y_coord;
 	while (true)
 	{
@@ -397,4 +401,45 @@ void Maze::restartLevel()
 			}
 		}
 	}
+}
+
+void Maze::spawnMonsters()
+{
+	for (size_t curr_num = 0; curr_num < monsters; ++curr_num)
+	{
+		spawnMonster();
+	}
+}
+
+void Maze::spawnMonster()
+{
+	while (true)
+	{
+		unsigned x_coord, y_coord;
+		srand(time(NULL));
+		x_coord = std::rand() % x_size;
+		y_coord = std::rand() % x_size;
+
+		if (canSpawn(x_coord, y_coord))
+		{
+			field[x_coord][y_coord].setMonster(x_coord,y_coord);
+			break;
+		}
+	}
+}
+
+bool Maze::canSpawn(unsigned x_coord, unsigned y_coord)const
+{
+
+	if (field[x_coord][y_coord].getPositionType() == START)
+		return false;
+	else if (field[x_coord][y_coord].getPositionType() == PORTAL)
+		return false;
+	else if (field[x_coord][y_coord].getPositionType() == BLOCKED)
+		return false;
+	else if (field[x_coord][y_coord].getPositionType() == BLOCKED_BY_USER)
+		return false;
+	else if (field[x_coord][y_coord].occupiedByMonster() == TRUE)
+		return false;
+	return true;
 }
