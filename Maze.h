@@ -8,6 +8,8 @@
 #include <windows.h>
 
 #include "Position.h"
+//#include "Graph.h"
+#include "Monster.h"
 
 using std::vector;
 
@@ -38,14 +40,16 @@ private:
 	int monsters;
 	RACE_CHOICE race_choice;
 	unsigned free_cells;
-	//Coordinates start;  //idk if i need this t.t
-	//Coordinates portal;// this too
+	Position* character_pos;
+	std::vector<Position*> monsters_list;
+
 public:
 	Maze();
 	Maze(const MAZE&, int, int, int);
 	~Maze() = default;
 	Maze(const Maze&);
 	Maze& operator=(const Maze&);
+	
 public:
 	bool validMazeCheck()const;
 	bool operator<(const Maze&)const;
@@ -55,23 +59,30 @@ public:
 
 	void print()const;//move after in private
 
-	void setCharacterCell(RACE_CHOICE);
-	void startLevel();
+	void startLevel(RACE_CHOICE);
 
 	void setFreeCells(unsigned);
 
-	void setStartAndPortal();
-	
-
 private:
-	//void initRace();
+
+	void startGame();
+
 	void restartLevel();
+	void setStartAndPortal();
+	void setCharacterCell(RACE_CHOICE);
+
+	//void generatePathEnchanter()const;
+	//void genetatePathMagus()const;
 
 	void spawnMonsters();
 	void spawnMonster();
 	bool canSpawn(unsigned, unsigned)const;
+	void addMonsterToList(int,int);
+	void moveMonsters();
+	void moveMonster(int, int, int, int);
 
 	bool BFS()const;
+	void BFS(std::queue<Coordinates>&)const;
 	bool markedUnvisited(VISITED_MATRIX&)const;
 	bool validCellCheck(int,int)const;
 
@@ -80,11 +91,19 @@ private:
 	void printCell(const Position&, char)const;
 	void printMaze()const;
 
+	void blockCells();
+	void blockCell();
 	void chooseNumCellsToBlock(unsigned&);
 	void chooseWhichCellsToBlock(unsigned);
 	bool validCellsToBlock(unsigned)const;
-	void blockCell();
+	
 
 	bool validCoordinates(int, int)const;
 	bool alreadyBlocked(int, int)const;
+
+	void buildGraph()const;
+
+	//del after:
+	void printQ(std::queue<Coordinates>&)const;
+
 };

@@ -12,7 +12,7 @@
 
 class Game
 {
-	Race race_choice;
+	RACE_CHOICE race_choice;
 	vector<Maze> levels;
 
 public:

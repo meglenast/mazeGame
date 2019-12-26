@@ -38,6 +38,16 @@ Coordinates Position::getCoordinates()const
 	return coordinates;
 }
 
+Monster* Position::getMonster()const
+{
+	return monster;
+}
+
+const Monster& Position::getMonsterByReference()const
+{
+	return *monster;
+}
+
 void Position::setCharacter(RACE_CHOICE choice)
 {
 	if (choice == ENCHANTER)
@@ -51,6 +61,11 @@ void Position::setCharacter(RACE_CHOICE choice)
 	}
 }
 
+void Position::setMonsterByReference(const Monster& monster)
+{
+	this->monster = new Monster(monster);
+}
+
 void Position::setMonster(unsigned x_coord, unsigned y_coord)
 {
 	monster = new Monster(x_coord, y_coord);
@@ -59,4 +74,19 @@ void Position::setMonster(unsigned x_coord, unsigned y_coord)
 void Position::setPositionType(POS_TYPE pos_type)
 {
 	position_type = pos_type;
+}
+
+void Position::calculateMoves()const
+{
+	//character->generateMovingPath();
+}
+
+void Position::removeMonster()
+{
+	if (!monster)
+	{
+		delete monster;
+		monster = nullptr;
+	}
+	monster = nullptr;
 }

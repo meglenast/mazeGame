@@ -8,7 +8,8 @@ Maze::Maze() :
 	y_size(0),
 	monsters(0),
 	race_choice(INVALID),
-	free_cells(0)
+	free_cells(0),
+	character_pos(&field[0][0])
 {}
 Maze::Maze(const MAZE& maze, int x_size, int y_size, int monsters):
 	field(maze),
@@ -16,7 +17,8 @@ Maze::Maze(const MAZE& maze, int x_size, int y_size, int monsters):
 	y_size(y_size),
 	monsters(monsters),
 	race_choice(INVALID),
-	free_cells(0)
+	free_cells(0),
+	character_pos(&field[0][0])
 {}
 Maze::Maze(const Maze& other) :
 	field(other.field),
@@ -24,7 +26,8 @@ Maze::Maze(const Maze& other) :
 	y_size(other.y_size),
 	monsters(other.monsters),
 	race_choice(other.race_choice),
-	free_cells(other.free_cells)
+	free_cells(other.free_cells),
+	character_pos(other.character_pos)
 {}
 Maze& Maze::operator=(const Maze& other)
 {
@@ -36,32 +39,28 @@ Maze& Maze::operator=(const Maze& other)
 		monsters = other.monsters;
 		race_choice = other.race_choice;
 		free_cells = other.free_cells;
+		character_pos = other.character_pos;
 	}
 	return *this;
 }
 
 //public:
 
-void Maze::startLevel()
+void Maze::startLevel(RACE_CHOICE race_choice)
 {
+	setStartAndPortal();
+	setCharacterCell(race_choice);
 	print();
-	while (true)
-	{
-		unsigned cell_to_block = 0;
-		chooseNumCellsToBlock(cell_to_block);
-		chooseWhichCellsToBlock(cell_to_block);
-		if (validMazeCheck())
-		{
-			break;
-		}
-		else
-		{
-			std::cout << "Invalid maze, try again blocking different cells.\n";
-			restartLevel();
-		}
-	}
+	blockCells();
 	spawnMonsters();
+	startGame();
 	print();
+}
+
+void Maze::startGame()
+{
+	//generatePathEnchanter();
+	moveMonsters();
 }
 
 bool Maze::validMazeCheck()const
@@ -303,6 +302,25 @@ void Maze::setStartAndPortal()
 	field[x_size-1][y_size-1].setPositionType(PORTAL);
 }
 
+void Maze::blockCells()
+{
+	while (true)
+	{
+		unsigned cell_to_block = 0;
+		chooseNumCellsToBlock(cell_to_block);
+		chooseWhichCellsToBlock(cell_to_block);
+		if (validMazeCheck())
+		{
+			break;
+		}
+		else
+		{
+			std::cout << "Invalid maze, try again blocking different cells.\n";
+			restartLevel();
+		}
+	}
+}
+
 void Maze::chooseNumCellsToBlock(unsigned& cells_to_block)
 {
 	if (free_cells == 0)
@@ -315,7 +333,7 @@ void Maze::chooseNumCellsToBlock(unsigned& cells_to_block)
 		std::cout << "Choose number of cells to block in this range : [ 0 : " << free_cells << " ]\n";
 		std::cout << "Your choice: ";
 		std::cin >> cells_to_block;
-		if (cells_to_block == 0) break;//put in other place later
+		if (cells_to_block == 0) break;
 		if (validCellsToBlock(cells_to_block))
 		{
 			std::cout << "\n";
@@ -423,6 +441,7 @@ void Maze::spawnMonster()
 		if (canSpawn(x_coord, y_coord))
 		{
 			field[x_coord][y_coord].setMonster(x_coord,y_coord);
+			addMonsterToList(x_coord, y_coord);
 			break;
 		}
 	}
@@ -430,7 +449,6 @@ void Maze::spawnMonster()
 
 bool Maze::canSpawn(unsigned x_coord, unsigned y_coord)const
 {
-
 	if (field[x_coord][y_coord].getPositionType() == START)
 		return false;
 	else if (field[x_coord][y_coord].getPositionType() == PORTAL)
@@ -443,3 +461,113 @@ bool Maze::canSpawn(unsigned x_coord, unsigned y_coord)const
 		return false;
 	return true;
 }
+
+void Maze::addMonsterToList(int x_coord, int y_coord)
+{
+	monsters_list.push_back(&field[x_coord][y_coord]);
+}
+
+void Maze::moveMonsters()
+{
+	for (unsigned iter = 0; iter < monsters_list.size(); ++iter)
+	{
+		Coordinates init_coords = monsters_list[iter]->getMonster()->getCoordinates();
+		Monster* curr_monster = monsters_list[iter]->getMonster();
+		while (true)
+		{
+			Coordinates curr_coords = curr_monster->nextCoordinates();
+			if (!validCellCheck(curr_coords.getX(), curr_coords.getY()) || alreadyBlocked(curr_coords.getX(), curr_coords.getY()))
+			{
+				curr_monster->changeDirection();
+			}
+			else
+			{
+				curr_monster->changeCoordinates(curr_coords.getX(), curr_coords.getY());
+				moveMonster(init_coords.getX(), init_coords.getY(), curr_coords.getX(), curr_coords.getY());
+				break;
+			}
+		}			
+	}
+	print();
+}
+
+void Maze::moveMonster(int old_x, int old_y, int new_x , int new_y)
+{
+	field[new_x][new_y].setMonsterByReference(field[old_x][old_y].getMonsterByReference());
+	field[old_x][old_y].removeMonster();
+}
+/*
+void Maze::BFS(std::queue<Coordinates>& mem_path)const
+{
+	VISITED_MATRIX visited;
+	markedUnvisited(visited);
+
+	std::queue<Position> queue;
+
+	queue.push(field[0][0]);
+
+	while (!queue.empty())
+	{
+		Position curr = queue.front();
+		int curr_x = curr.getCoordinates().getX();
+		int curr_y = curr.getCoordinates().getY();
+		if (curr_x == x_size - 1 && curr_y == y_size - 1)
+			mem_path.push(Coordinates(curr_x, curr_y));
+
+		queue.pop();
+
+		for (int direction = 0; direction < DIRECTIONS; ++direction)
+		{
+			int new_xCoord = curr.getCoordinates().getX() + DX[direction];
+			int new_yCoord = curr.getCoordinates().getY() + DY[direction];
+
+			if (validCellCheck(new_xCoord, new_yCoord) && !visited[new_xCoord][new_yCoord] && (field[new_xCoord][new_yCoord].getPositionType() == EMPTY || field[new_xCoord][new_yCoord].getPositionType() == PORTAL))//??
+			{
+				visited[new_xCoord][new_yCoord] = true;
+				mem_path.push(Coordinates(new_xCoord, new_yCoord));
+				Position adj_cell(field[new_xCoord][new_yCoord]);
+				queue.push(adj_cell);
+			}
+		}
+	}
+}
+*/
+/*
+void Maze::generatePathEnchanter()const
+{
+	//std::queue<Coordinates> mem_path;
+	//BFS(mem_path);
+	//printQ(mem_path);
+	buildGraph();
+}
+*/
+/*
+void Maze::buildGraph()const
+{
+	unsigned size = ((x_size - 1) * y_size) + ((y_size - 1) * x_size);
+	Graph mazeGraph(size);
+
+	for (unsigned row_index = 0; row_index < x_size; ++row_index)
+	{
+		for (unsigned col_index = 0; col_index < y_size; ++col_index)
+		{
+			if (row_index != x_size - 1)
+			{
+				mazeGraph.addEdge(field[row_index][col_index], field[row_index][col_index + 1]);
+
+			
+			}
+		}
+	}
+}
+*/
+/*
+void Maze::printQ(std::queue<Coordinates>& queue)const
+{
+	while (!queue.empty())
+	{
+		std::cout << queue.front().getX() << " " << queue.front().getY() << std::endl;
+		queue.pop();
+	}
+}
+*/

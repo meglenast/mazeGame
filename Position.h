@@ -34,10 +34,15 @@ public:
 	bool isBlocked()const;
 	POS_TYPE getPositionType()const;
 	Coordinates getCoordinates()const;
+	Monster* getMonster()const;
+	const Monster& getMonsterByReference()const;
 
 	void setCharacter(RACE_CHOICE);
 	void setMonster(unsigned, unsigned);
+	void setMonsterByReference(const Monster&);
 	void setPositionType(POS_TYPE);
 
+	void removeMonster();
 
+	void calculateMoves()const;
 };
