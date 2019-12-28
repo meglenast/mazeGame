@@ -6,12 +6,26 @@ private:
 	int xCord;
 	int yCord;
 public:
-	Coordinates(int x = -1, int y = -1)
+	
+	Coordinates(int x = -1, int y = -1) :
+		xCord(x),
+		yCord(y)
+	{}
+
+	Coordinates(const Coordinates& other) :
+		xCord(other.xCord),
+		yCord(other.yCord)
+	{}
+
+	Coordinates& operator=(const Coordinates& other)
 	{
-		xCord = x;
-		yCord = y;
+		if (this != &other)
+		{
+			xCord = other.xCord;
+			yCord = other.yCord;
+		}
+		return *this;
 	}
-	Coordinates(const Coordinates&) = default;
 
 	int getX()const { return xCord; }
 	int getY()const { return yCord; }

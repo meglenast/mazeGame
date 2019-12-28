@@ -21,8 +21,11 @@ public:
 	Race(const Race&) = default;
 	Race& operator=(const Race&) = default;
 public:
+
+	//virtual void generateMovingPath() = 0;
 	//const Coordinates& getPosition()const;
 	RACE_CHOICE getRace()const;
+
 
 	//void setPosition(int, int);
 private:

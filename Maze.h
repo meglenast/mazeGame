@@ -78,6 +78,7 @@ private:
 	void spawnMonster();
 	bool canSpawn(unsigned, unsigned)const;
 	void addMonsterToList(int,int);
+	void changeMonsterList(int, int, int, int);
 	void moveMonsters();
 	void moveMonster(int, int, int, int);
 
@@ -100,6 +101,7 @@ private:
 
 	bool validCoordinates(int, int)const;
 	bool alreadyBlocked(int, int)const;
+	bool alreadyOccupied(int, int)const;
 
 	void buildGraph()const;
 

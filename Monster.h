@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Coordinates.h"
-
 enum MOVING_DIRECTION
 {
 	UP = 0,
@@ -16,7 +15,7 @@ private:
 	Coordinates position;
 	enum MOVING_DIRECTION next_direction;
 public:
-	Monster(int= -1, int = -1, MOVING_DIRECTION = UP);
+	Monster(int= 0, int = 0, MOVING_DIRECTION = UP);
 	Monster(const Monster&) = default;
 	Monster& operator=(const Monster&) = default;
 	~Monster() = default;

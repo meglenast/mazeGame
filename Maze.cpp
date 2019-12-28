@@ -53,13 +53,18 @@ void Maze::startLevel(RACE_CHOICE race_choice)
 	print();
 	blockCells();
 	spawnMonsters();
-	startGame();
 	print();
+	startGame();
 }
 
 void Maze::startGame()
 {
 	//generatePathEnchanter();
+	moveMonsters();
+	moveMonsters();
+	moveMonsters();
+	moveMonsters();
+	moveMonsters();
 	moveMonsters();
 }
 
@@ -358,7 +363,12 @@ void Maze::chooseWhichCellsToBlock(unsigned num_cells)
 
 bool Maze::alreadyBlocked(int x_coord, int y_coord)const
 {
-	return field[x_coord][y_coord].isBlocked();
+	return (field[x_coord][y_coord].isBlocked() || (x_coord == x_size - 1 && y_coord == y_size - 1) || (x_coord == 0 && y_coord == 0));
+}
+
+bool Maze::alreadyOccupied(int x_coord, int y_coord)const
+{
+	return field[x_coord][y_coord].occupiedByMonster();
 }
 
 bool Maze::validCoordinates(int x_coord, int y_coord)const
@@ -444,6 +454,7 @@ void Maze::spawnMonster()
 			addMonsterToList(x_coord, y_coord);
 			break;
 		}
+		
 	}
 }
 
@@ -469,21 +480,22 @@ void Maze::addMonsterToList(int x_coord, int y_coord)
 
 void Maze::moveMonsters()
 {
-	for (unsigned iter = 0; iter < monsters_list.size(); ++iter)
+	for (int iter = 0; iter < monsters_list.size(); ++iter)
 	{
-		Coordinates init_coords = monsters_list[iter]->getMonster()->getCoordinates();
+		Coordinates init_coords(monsters_list[iter]->getMonster()->getCoordinates());
 		Monster* curr_monster = monsters_list[iter]->getMonster();
 		while (true)
 		{
-			Coordinates curr_coords = curr_monster->nextCoordinates();
-			if (!validCellCheck(curr_coords.getX(), curr_coords.getY()) || alreadyBlocked(curr_coords.getX(), curr_coords.getY()))
+			int curr_xCoord = curr_monster->nextCoordinates().getX();
+			int curr_yCoord = curr_monster->nextCoordinates().getY();
+			if(!validCellCheck(curr_xCoord, curr_yCoord) || alreadyBlocked(curr_xCoord, curr_yCoord) || alreadyOccupied(curr_xCoord, curr_yCoord))
 			{
 				curr_monster->changeDirection();
 			}
 			else
 			{
-				curr_monster->changeCoordinates(curr_coords.getX(), curr_coords.getY());
-				moveMonster(init_coords.getX(), init_coords.getY(), curr_coords.getX(), curr_coords.getY());
+				curr_monster->changeCoordinates(curr_xCoord, curr_yCoord);
+				moveMonster(init_coords.getX(), init_coords.getY(), curr_xCoord, curr_yCoord);
 				break;
 			}
 		}			
@@ -491,10 +503,25 @@ void Maze::moveMonsters()
 	print();
 }
 
+void Maze::changeMonsterList(int old_x, int old_y, int new_x, int new_y)
+{
+	for (size_t i = 0; i < monsters_list.size(); ++i)
+	{
+		int curr_x = monsters_list[i]->getCoordinates().getX();
+		int curr_y = monsters_list[i]->getCoordinates().getY();
+
+		if (curr_x == old_x && curr_y == old_y)
+		{
+			monsters_list[i] = &field[new_x][new_y];
+		}
+	}
+}
+
 void Maze::moveMonster(int old_x, int old_y, int new_x , int new_y)
 {
 	field[new_x][new_y].setMonsterByReference(field[old_x][old_y].getMonsterByReference());
 	field[old_x][old_y].removeMonster();
+	changeMonsterList(old_x, old_y, new_x, new_y);
 }
 /*
 void Maze::BFS(std::queue<Coordinates>& mem_path)const
