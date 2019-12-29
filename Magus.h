@@ -6,7 +6,9 @@
 class Magus : public Race
 {
 public:
-	Magus(RACE_CHOICE = MAGUS/*, int = -1, int = -1*/);
+	Magus(RACE_CHOICE = MAGUS);
+	Magus(const Race&);
+	Magus& operator=(const Magus&);
 
 public:
 	const Coordinates& getMove();

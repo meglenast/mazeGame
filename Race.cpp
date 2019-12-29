@@ -1,27 +1,23 @@
 #include "Race.h"
 
-Race::Race(RACE_CHOICE choice/*, int x_coord, int y_coord*/) :
-	race(choice)
-	//position(x_coord, y_coord)
+Race::Race(RACE_CHOICE choice) :
+	race(choice),
+	moovingPath(nullptr)
+{}
+
+Race::Race(const Race& other) :
+	race(other.race),
+	moovingPath(other.moovingPath)
 {}
 
 //public:
 
-/*
-const Coordinates& Race::getPosition()const
+void Race::setMoovingPath(std::queue<Coordinates>* moovingPath)
 {
-	return position;
+	this->moovingPath = moovingPath;
 }
-*/
 
 RACE_CHOICE Race::getRace()const
 {
 	return race;
 }
-/*
-void Race::setPosition(int x_coord, int y_coord)
-{
-	position.setX(x_coord);
-	position.setY(y_coord);
-}
-*/

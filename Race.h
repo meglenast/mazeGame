@@ -1,5 +1,10 @@
 #pragma once
 
+#include <queue>
+
+//del
+#include <iostream>
+
 #include "Coordinates.h"
 
 enum RACE_CHOICE
@@ -12,18 +17,22 @@ enum RACE_CHOICE
 
 class Race
 {
-private:
+protected:
 	RACE_CHOICE race;
+	std::queue<Coordinates>* moovingPath;
 	//Coordinates position;
 public:
-	Race(RACE_CHOICE = INVALID/*, int = -1, int = -1*/);
-	virtual ~Race() = default;
-	Race(const Race&) = default;
+	Race(RACE_CHOICE = INVALID);
+	Race(const Race&);
 	Race& operator=(const Race&) = default;
+	virtual ~Race() = default;
 public:
 
 	//virtual void generateMovingPath() = 0;
 	//const Coordinates& getPosition()const;
+	void setMoovingPath(std::queue<Coordinates>*);
+	virtual const Coordinates& getMove()=0;
+
 	RACE_CHOICE getRace()const;
 
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <queue>
+
 #include "Enchanter.h"
 #include "Magus.h"
 #include "Monster.h"
@@ -28,21 +30,33 @@ public:
 	~Position() = default;
 	Position(const Position&) = default;
 	Position& operator=(const Position&) = default;
+
 public:
+
 	bool occupiedByMonster()const;
 	bool occupiedByCharacter()const;
+
 	bool isBlocked()const;
 	POS_TYPE getPositionType()const;
 	Coordinates getCoordinates()const;
+
 	Monster* getMonster()const;
 	const Monster& getMonsterByReference()const;
-
-	void setCharacter(RACE_CHOICE);
+	void removeMonster();
 	void setMonster(unsigned, unsigned);
 	void setMonsterByReference(const Monster&);
 	void setPositionType(POS_TYPE);
 
-	void removeMonster();
+	void removeCharacter();
+	void setCharacter(RACE_CHOICE);
+	void setCharacterByReference(const Race&);
+	const Race& getCharacter()const;
+
+
+	void addMoovingPath(std::queue<Coordinates>*);
+	const Coordinates& getCharacterMove()const;
+
+	
 
 	void calculateMoves()const;
 };
