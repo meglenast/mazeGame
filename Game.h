@@ -27,7 +27,6 @@ private:
 	void startGame();
 	void initLevels();
 
-	void bubbleSort();
 	void sortLevels();
 	void mergeSort(vector<Maze>&, int, int);
 	void merge(vector<Maze>&, int, int, int);

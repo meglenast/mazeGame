@@ -128,21 +128,6 @@ void Game::sortLevels()
 {
 	mergeSort(levels, 0, levels.size() - 1);
 }
-void Game::bubbleSort()
-{
-	int size = levels.size();
-
-	for (int i = 0; i < size - 1; ++i)
-	{
-		for (int j = i; j < size - i - 1; ++j)
-		{
-			if (levels[j+1] < levels[j])
-			{
-				std::swap(levels[j + 1], levels[j]);
-			}
-		}
-	}
-}
 
 void Game::merge(vector<Maze>& array, int left, int mid, int right)
 {
