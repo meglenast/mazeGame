@@ -25,7 +25,7 @@ bool Position::occupiedByCharacter()const
 
 bool Position::isBlocked()const
 {
-	return position_type == BLOCKED;
+	return (position_type == BLOCKED || position_type == BLOCKED_BY_USER);//added bl by user
 }
 
 POS_TYPE Position::getPositionType()const
