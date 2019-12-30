@@ -35,7 +35,24 @@ void Game::startGame()
 {
 	for (unsigned levels_cnt = 0; levels_cnt < levels.size(); ++levels_cnt)
 	{
-		levels[levels_cnt].startLevel(race_choice);
+		if (levels[levels_cnt].startLevel(race_choice))
+		{
+			if (levels_cnt == levels.size() - 1)
+			{
+				std::cout << "WON\n";
+				//printWon();
+			}
+			else
+			{ 
+				std::cout << "NEXT_LEVEL\n";
+				//printNextLevelTransition();
+			}
+		}
+		else
+		{
+			std::cout << "GAME OVER\n";
+			//printGameOver
+		}
 	}
 }
 

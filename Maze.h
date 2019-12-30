@@ -65,13 +65,16 @@ public:
 
 	void print()const;//move after in private
 
-	void startLevel(RACE_CHOICE);
+	bool startLevel(RACE_CHOICE);
 
 	void setFreeCells(unsigned);
 
 private:
 
-	void startGame();
+	bool startGame();
+
+	bool haveReachedPortal()const;
+	bool killedByMonster()const;
 
 	void restartLevel();
 	void setStartAndPortal();

@@ -47,7 +47,7 @@ Maze& Maze::operator=(const Maze& other)
 
 //public:
 
-void Maze::startLevel(RACE_CHOICE race_choice)
+bool Maze::startLevel(RACE_CHOICE race_choice)
 {
 	setStartAndPortal();
 	setCharacterCell(race_choice);
@@ -55,10 +55,11 @@ void Maze::startLevel(RACE_CHOICE race_choice)
 	blockCells();
 	spawnMonsters();
 	print();
-	startGame();
+
+	return startGame();
 }
 
-void Maze::startGame()
+bool Maze::startGame()
 {
 	if (race_choice == MAGUS)
 	{
@@ -68,28 +69,43 @@ void Maze::startGame()
 	{
 		generateEnchanterPath();
 	}
-	
-	moveCharacter();
-	print();
-	moveCharacter();
-	print();
-	moveCharacter();
-	print();
-	moveCharacter();
-	print();
-	/*moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();
-	moveMonsters();*/
+	while (true)
+	{
+		moveCharacter();
+		moveMonsters();
+		if (haveReachedPortal())
+		{
+			print();
+			return true;
+		}
+		if (killedByMonster())
+		{
+			print();
+			return false;
+		}
+		print();
+	}
+}
 
+bool Maze::haveReachedPortal()const
+{
+	return (character_pos->getCoordinates().getX() == x_size - 1 && character_pos->getCoordinates().getY() == y_size - 1);
+}
+
+bool Maze::killedByMonster()const
+{
+	int character_xCoord = character_pos->getCoordinates().getX();
+	int character_yCoord = character_pos->getCoordinates().getY();
+
+	for (size_t monster_idx = 0; monster_idx < monsters_list.size(); ++monster_idx)
+	{
+		int monster_xCoord = monsters_list[monster_idx]->getCoordinates().getX();
+		int monster_yCoord = monsters_list[monster_idx]->getCoordinates().getY();
+
+		if (character_xCoord == monster_xCoord && character_yCoord == monster_yCoord)
+			return true;
+	}
+	return false;
 }
 
 bool Maze::validMazeCheck()const
@@ -300,6 +316,7 @@ bool Maze::validCellCheck(int new_xCoord, int new_yCoord)const
 
 bool Maze::markedUnvisited(VISITED_MATRIX& visited)const
 {
+	/*
 	for (int row_index = 0; row_index < x_size; ++row_index)
 	{
 		vector<bool> curr_row;
@@ -322,6 +339,28 @@ bool Maze::markedUnvisited(VISITED_MATRIX& visited)const
 				visited.push_back(curr_row);
 			}	
 		}
+	}
+	visited[0][0] = true;
+	return true;
+	*/
+	for (int row_index = 0; row_index < x_size; ++row_index)
+	{
+		vector<bool> curr_row;
+		for (int col_index = 0; col_index < y_size; ++col_index)
+		{
+			if (field[row_index][col_index].getPositionType() == UNDEFINED)
+				return false;
+
+			if (field[row_index][col_index].getPositionType() == BLOCKED || field[row_index][col_index].getPositionType() == BLOCKED_BY_USER)
+			{
+				curr_row.push_back(true);
+			}
+			else
+			{
+				curr_row.push_back(false);
+			}
+		}
+		visited.push_back(curr_row);
 	}
 	visited[0][0] = true;
 	return true;
@@ -668,7 +707,7 @@ void Maze::aStarAlgorithm()
 				reached = true;
 				return;
 			}
-			else if (closedList[x_coord - 1][y_coord] == false)//&&unblocked
+			else if (closedList[x_coord - 1][y_coord] == false && field[x_coord - 1][y_coord].isBlocked() == false)
 			{
 				new_gDist = posInfo[x_coord][y_coord].g_distance + 1.0;
 				new_hDist = calcHdist(x_coord - 1, y_coord);
@@ -685,7 +724,7 @@ void Maze::aStarAlgorithm()
 
 		///
 
-		if (validCellCheck(x_coord + 1, y_coord))		//downwards check
+		if (validCellCheck(x_coord + 1, y_coord))	
 		{
 			if (isPortal(x_coord + 1, y_coord))
 			{
@@ -697,7 +736,7 @@ void Maze::aStarAlgorithm()
 				reached = true;
 				return;
 			}
-			else if (closedList[x_coord + 1][y_coord] == false)//&&unblocked
+			else if (closedList[x_coord + 1][y_coord] == false && field[x_coord + 1][y_coord].isBlocked() == false)
 			{
 				new_gDist = posInfo[x_coord][y_coord].g_distance + 1.0;
 				new_hDist = calcHdist(x_coord + 1, y_coord);
@@ -726,7 +765,7 @@ void Maze::aStarAlgorithm()
 				reached = true;
 				return;
 			}
-			else if (closedList[x_coord][y_coord + 1] == false)//&&unblocked
+			else if (closedList[x_coord][y_coord + 1] == false && field[x_coord][y_coord + 1].isBlocked() == false)
 			{
 				new_gDist = posInfo[x_coord][y_coord].g_distance + 1.0;
 				new_hDist = calcHdist(x_coord, y_coord + 1);
@@ -755,7 +794,7 @@ void Maze::aStarAlgorithm()
 				reached = true;
 				return;
 			}
-			else if (closedList[x_coord][y_coord - 1] == false)//&&unblocked
+			else if (closedList[x_coord][y_coord - 1] == false && field[x_coord][y_coord-1].isBlocked() == false)//&&unblocked
 			{
 				new_gDist = posInfo[x_coord][y_coord].g_distance + 1.0;
 				new_hDist = calcHdist(x_coord, y_coord - 1);

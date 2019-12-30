@@ -8,8 +8,6 @@
 
 #include "Maze.h"
 
-
-
 class Game
 {
 	RACE_CHOICE race_choice;
