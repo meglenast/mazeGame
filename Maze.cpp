@@ -9,7 +9,8 @@ Maze::Maze() :
 	monsters(0),
 	race_choice(INVALID),
 	free_cells(0),
-	character_pos(&field[0][0])
+	character_pos(&field[0][0]),
+	movingPath(nullptr)
 {}
 Maze::Maze(const MAZE& maze, int x_size, int y_size, int monsters):
 	field(maze),
@@ -20,7 +21,7 @@ Maze::Maze(const MAZE& maze, int x_size, int y_size, int monsters):
 	free_cells(0),
 	character_pos(&field[0][0])
 {}
-Maze::Maze(const Maze& other) :
+Maze::Maze(const Maze& other) :					
 	field(other.field),
 	x_size(other.x_size),
 	y_size(other.y_size),
@@ -29,7 +30,7 @@ Maze::Maze(const Maze& other) :
 	free_cells(other.free_cells),
 	character_pos(other.character_pos)
 {}
-Maze& Maze::operator=(const Maze& other)
+Maze& Maze::operator=(const Maze& other)			
 {
 	if (this != &other)
 	{
@@ -59,13 +60,36 @@ void Maze::startLevel(RACE_CHOICE race_choice)
 
 void Maze::startGame()
 {
-	//generatePathEnchanter();
+	if (race_choice == MAGUS)
+	{
+		generateMagusPath();
+	}
+	else if (race_choice == ENCHANTER)
+	{
+		generateEnchanterPath();
+	}
+	
+	moveCharacter();
+	print();
+	moveCharacter();
+	print();
+	moveCharacter();
+	print();
+	moveCharacter();
+	print();
+	/*moveMonsters();
 	moveMonsters();
 	moveMonsters();
 	moveMonsters();
 	moveMonsters();
 	moveMonsters();
 	moveMonsters();
+	moveMonsters();
+	moveMonsters();
+	moveMonsters();
+	moveMonsters();
+	moveMonsters();*/
+
 }
 
 bool Maze::validMazeCheck()const
@@ -84,7 +108,9 @@ void Maze::setFreeCells(unsigned free_cells)
 
 void Maze::setCharacterCell(RACE_CHOICE choice)
 {
+	race_choice = choice;
 	field[0][0].setCharacter(choice);
+	character_pos = &field[0][0];
 }
 
 void Maze::printMaze()const
@@ -371,6 +397,11 @@ bool Maze::alreadyOccupied(int x_coord, int y_coord)const
 	return field[x_coord][y_coord].occupiedByMonster();
 }
 
+bool Maze::isPortal(int x_coord, int y_coord)const
+{
+	return (x_coord == x_size - 1 && y_coord == y_size - 1);
+}
+
 bool Maze::validCoordinates(int x_coord, int y_coord)const
 {
 	if (!validCellCheck(x_coord, y_coord))
@@ -454,7 +485,6 @@ void Maze::spawnMonster()
 			addMonsterToList(x_coord, y_coord);
 			break;
 		}
-		
 	}
 }
 
@@ -523,78 +553,272 @@ void Maze::moveMonster(int old_x, int old_y, int new_x , int new_y)
 	field[old_x][old_y].removeMonster();
 	changeMonsterList(old_x, old_y, new_x, new_y);
 }
-/*
-void Maze::BFS(std::queue<Coordinates>& mem_path)const
+
+//Moving character:
+
+void Maze::moveCharacter()
+{
+	Coordinates old_coords = character_pos->getCoordinates();
+	Coordinates new_coords = character_pos->getCharacterMove();
+	field[new_coords.getX()][new_coords.getY()].setCharacterByReference(field[old_coords.getX()][old_coords.getY()].getCharacter());
+	field[old_coords.getX()][old_coords.getY()].removeCharacter();
+	character_pos = &field[new_coords.getX()][new_coords.getY()];
+}
+
+//Generating magus path: 
+void Maze::generateMagusPath()
+{
+	movingPath = new std::queue<Coordinates>;
+	DFS_iterative();
+	character_pos->getCharacter().setMovingPath(movingPath);
+}
+
+void Maze::DFS_iterative()
 {
 	VISITED_MATRIX visited;
 	markedUnvisited(visited);
 
-	std::queue<Position> queue;
+	std::stack<Position> dfs_stack;
+	dfs_stack.push(field[0][0]);		//pushing the sourse/starting cell on the bottom of the stack
 
-	queue.push(field[0][0]);
-
-	while (!queue.empty())
+	while (!dfs_stack.empty())
 	{
-		Position curr = queue.front();
-		int curr_x = curr.getCoordinates().getX();
-		int curr_y = curr.getCoordinates().getY();
-		if (curr_x == x_size - 1 && curr_y == y_size - 1)
-			mem_path.push(Coordinates(curr_x, curr_y));
+		Position curr_top = dfs_stack.top();
 
-		queue.pop();
+		int curr_xCoord = curr_top.getCoordinates().getX();
+		int curr_yCoord = curr_top.getCoordinates().getY();
 
-		for (int direction = 0; direction < DIRECTIONS; ++direction)
+		dfs_stack.pop();
+
+		movingPath->push(Coordinates(curr_xCoord, curr_yCoord));
+
+		if (curr_xCoord == x_size - 1 && curr_yCoord == y_size - 1)
 		{
-			int new_xCoord = curr.getCoordinates().getX() + DX[direction];
-			int new_yCoord = curr.getCoordinates().getY() + DY[direction];
+			movingPath->pop();		//popping the fist cell, where the magus is initiated by default
+			break;
+		}
 
-			if (validCellCheck(new_xCoord, new_yCoord) && !visited[new_xCoord][new_yCoord] && (field[new_xCoord][new_yCoord].getPositionType() == EMPTY || field[new_xCoord][new_yCoord].getPositionType() == PORTAL))//??
-			{
-				visited[new_xCoord][new_yCoord] = true;
-				mem_path.push(Coordinates(new_xCoord, new_yCoord));
-				Position adj_cell(field[new_xCoord][new_yCoord]);
-				queue.push(adj_cell);
-			}
+		if (validCellCheck(curr_xCoord - ONE_STEP, curr_yCoord) && visited[curr_xCoord - ONE_STEP][curr_yCoord] == false) // check for unvisited adjesent cell upwards
+		{
+			dfs_stack.push(field[curr_xCoord - ONE_STEP][curr_yCoord]);
+			visited[curr_xCoord - ONE_STEP][curr_yCoord] = true;
+		}
+		if (validCellCheck(curr_xCoord, curr_yCoord - ONE_STEP) && visited[curr_xCoord][curr_yCoord - ONE_STEP] == false) // check for unvisited adjecent cell on the left
+		{
+			dfs_stack.push(field[curr_xCoord][curr_yCoord - ONE_STEP]);
+			visited[curr_xCoord][curr_yCoord - ONE_STEP] = true;
+		}
+		if (validCellCheck(curr_xCoord + ONE_STEP, curr_yCoord) && visited[curr_xCoord + ONE_STEP][curr_yCoord] == false) // check for unvisited adjecent cell downwards
+		{
+			dfs_stack.push(field[curr_xCoord + ONE_STEP][curr_yCoord]);
+			visited[curr_xCoord + ONE_STEP][curr_yCoord] = true;
+		}
+		if (validCellCheck(curr_xCoord, curr_yCoord + ONE_STEP) && visited[curr_xCoord][curr_yCoord + ONE_STEP] == false) // check for unvisited adjecent cell on the right
+		{
+			dfs_stack.push(field[curr_xCoord][curr_yCoord + ONE_STEP]);
+			visited[curr_xCoord][curr_yCoord + ONE_STEP] = true;
 		}
 	}
 }
-*/
-/*
-void Maze::generatePathEnchanter()const
+
+//Generating Enchanter's path:
+
+void Maze::generateEnchanterPath()
 {
-	//std::queue<Coordinates> mem_path;
-	//BFS(mem_path);
-	//printQ(mem_path);
-	buildGraph();
+	movingPath = new std::queue < Coordinates>;
+	aStarAlgorithm();
+	character_pos->getCharacter().setMovingPath(movingPath);
 }
-*/
-/*
-void Maze::buildGraph()const
+
+void Maze::aStarAlgorithm()
 {
-	unsigned size = ((x_size - 1) * y_size) + ((y_size - 1) * x_size);
-	Graph mazeGraph(size);
+	VISITED_MATRIX closedList;
+	markedUnvisited(closedList);
 
-	for (unsigned row_index = 0; row_index < x_size; ++row_index)
+	POSITIONS_INFO posInfo;
+	initPositionInfo(posInfo);
+	
+	std::set<Asoc_pair_dist> openList;
+	openList.insert(Asoc_pair_dist(0.0, Coordinates(0, 0)));
+
+	bool reached = false;
+
+	while (!openList.empty())
 	{
-		for (unsigned col_index = 0; col_index < y_size; ++col_index)
-		{
-			if (row_index != x_size - 1)
-			{
-				mazeGraph.addEdge(field[row_index][col_index], field[row_index][col_index + 1]);
+		Asoc_pair_dist curr_position = *openList.begin();
 
-			
+		openList.erase(openList.begin());
+
+		unsigned  x_coord = curr_position.coords.getX();
+		unsigned  y_coord = curr_position.coords.getY();
+
+		closedList[x_coord][y_coord] = true;
+
+		double new_gDist, new_hDist, new_fDist;
+
+		if (validCellCheck(x_coord - 1, y_coord))		//upwards check
+		{
+			if (isPortal(x_coord - 1, y_coord))
+			{
+				posInfo[x_coord - 1][y_coord].adjecent_xCoord = x_coord;
+				posInfo[x_coord - 1][y_coord].adjecent_yCoord = y_coord;
+
+				pathTracing(posInfo);
+
+				reached = true;
+				return;
+			}
+			else if (closedList[x_coord - 1][y_coord] == false)//&&unblocked
+			{
+				new_gDist = posInfo[x_coord][y_coord].g_distance + 1.0;
+				new_hDist = calcHdist(x_coord - 1, y_coord);
+				new_fDist = new_gDist + new_hDist;
+
+				if (posInfo[x_coord - 1][y_coord].f_distance == FLT_MAX || posInfo[x_coord - 1][y_coord].f_distance > new_fDist)
+				{
+					openList.insert(Asoc_pair_dist(new_fDist, Coordinates(x_coord - 1, y_coord)));
+
+					posInfo[x_coord - 1][y_coord].setInfo(new_fDist, new_gDist, new_hDist, x_coord, y_coord);
+				}
 			}
 		}
+
+		///
+
+		if (validCellCheck(x_coord + 1, y_coord))		//downwards check
+		{
+			if (isPortal(x_coord + 1, y_coord))
+			{
+				posInfo[x_coord + 1][y_coord].adjecent_xCoord = x_coord;
+				posInfo[x_coord + 1][y_coord].adjecent_yCoord = y_coord;
+
+				pathTracing(posInfo);
+
+				reached = true;
+				return;
+			}
+			else if (closedList[x_coord + 1][y_coord] == false)//&&unblocked
+			{
+				new_gDist = posInfo[x_coord][y_coord].g_distance + 1.0;
+				new_hDist = calcHdist(x_coord + 1, y_coord);
+				new_fDist = new_gDist + new_hDist;
+
+				if (posInfo[x_coord + 1][y_coord].f_distance == FLT_MAX || posInfo[x_coord + 1][y_coord].f_distance > new_fDist)
+				{
+					openList.insert(Asoc_pair_dist(new_fDist, Coordinates(x_coord + 1, y_coord)));
+
+					posInfo[x_coord + 1][y_coord].setInfo(new_fDist, new_gDist, new_hDist, x_coord, y_coord);
+				}
+			}
+		}
+
+		///
+
+		if (validCellCheck(x_coord, y_coord + 1))		//on the right check
+		{
+			if (isPortal(x_coord, y_coord + 1))
+			{
+				posInfo[x_coord][y_coord + 1].adjecent_xCoord = x_coord;
+				posInfo[x_coord][y_coord + 1].adjecent_yCoord = y_coord;
+
+				pathTracing(posInfo);
+
+				reached = true;
+				return;
+			}
+			else if (closedList[x_coord][y_coord + 1] == false)//&&unblocked
+			{
+				new_gDist = posInfo[x_coord][y_coord].g_distance + 1.0;
+				new_hDist = calcHdist(x_coord, y_coord + 1);
+				new_fDist = new_gDist + new_hDist;
+
+				if (posInfo[x_coord][y_coord + 1].f_distance == FLT_MAX || posInfo[x_coord][y_coord + 1].f_distance > new_fDist)
+				{
+					openList.insert(Asoc_pair_dist(new_fDist, Coordinates(x_coord, y_coord + 1)));
+
+					posInfo[x_coord][y_coord + 1].setInfo(new_fDist, new_gDist, new_hDist, x_coord, y_coord);
+				}
+			}
+		}
+
+		//
+
+		if (validCellCheck(x_coord, y_coord - 1))		//on the left check
+		{
+			if (isPortal(x_coord, y_coord - 1))
+			{
+				posInfo[x_coord][y_coord - 1].adjecent_xCoord = x_coord;
+				posInfo[x_coord][y_coord - 1].adjecent_yCoord = y_coord;
+
+				pathTracing(posInfo);
+
+				reached = true;
+				return;
+			}
+			else if (closedList[x_coord][y_coord - 1] == false)//&&unblocked
+			{
+				new_gDist = posInfo[x_coord][y_coord].g_distance + 1.0;
+				new_hDist = calcHdist(x_coord, y_coord - 1);
+				new_fDist = new_gDist + new_hDist;
+
+				if (posInfo[x_coord][y_coord - 1].f_distance == FLT_MAX || posInfo[x_coord][y_coord - 1].f_distance > new_fDist)
+				{
+					openList.insert(Asoc_pair_dist(new_fDist, Coordinates(x_coord, y_coord - 1)));
+
+					posInfo[x_coord][y_coord - 1].setInfo(new_fDist, new_gDist, new_hDist, x_coord, y_coord);
+				}
+			}
+
+		}
+
+
 	}
 }
-*/
-/*
-void Maze::printQ(std::queue<Coordinates>& queue)const
+
+double Maze::calcHdist(int x_coord, int y_coord)const
 {
-	while (!queue.empty())
+	double x_dest = x_size - 1.0;
+	double y_dest = y_size - 1.0;
+
+	double dx = (double)x_coord - x_dest;//casts?
+	double dy = (double)y_coord - y_dest;
+
+	return ((double)sqrt((dx * dx) + (dy * dy)));
+}
+
+void Maze::initPositionInfo(POSITIONS_INFO& posInfo)const
+{
+	for (size_t row_index = 0; row_index < x_size; ++row_index)
 	{
-		std::cout << queue.front().getX() << " " << queue.front().getY() << std::endl;
-		queue.pop();
+		vector<PositionInformation> curr_row;
+		for (size_t col_index = 0; col_index < y_size; ++col_index)
+		{
+			curr_row.push_back(PositionInformation(FLT_MAX, FLT_MAX, FLT_MAX, -1, -1));
+		}
+		posInfo.push_back(curr_row);
+	}
+	posInfo[0][0].setInfo(0.0, 0.0, 0.0, 0, 0);		//initiating the distances for the source position
+}
+
+void Maze::pathTracing(const POSITIONS_INFO& posInfo)
+{
+	int curr_x = x_size - 1;
+	int curr_y = y_size - 1;
+	std::stack<Coordinates> path;
+	while (!(posInfo[curr_x][curr_y].adjecent_xCoord == curr_x && posInfo[curr_x][curr_y].adjecent_yCoord == curr_y))
+	{
+		path.push(Coordinates(curr_x, curr_y));
+
+		int next_x = posInfo[curr_x][curr_y].adjecent_xCoord;
+		int next_y = posInfo[curr_x][curr_y].adjecent_yCoord;
+
+		curr_x = next_x;
+		curr_y = next_y;
+	}
+
+	while (!path.empty())
+	{
+		movingPath->push(path.top());
+		path.pop();
 	}
 }
-*/

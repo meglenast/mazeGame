@@ -2,23 +2,29 @@
 
 #include <vector>
 #include <queue>
+#include <stack>
+#include <set>
 
 #include <iostream>
 #include <ctime>
 #include <windows.h>
+#include <limits>
 
 #include "Position.h"
-//#include "Graph.h"
 #include "Monster.h"
+#include "Coordinates.h"
 
+//fix this
 using std::vector;
 
 
 
 typedef vector<vector<Position>> MAZE;
 typedef vector<vector<bool>> VISITED_MATRIX;
+typedef vector<vector<PositionInformation>> POSITIONS_INFO;
 
 const int DIRECTIONS = 4;
+const int ONE_STEP   = 1;
 
 const char WHITE_SQUARE = 0xDB;
 const char BLACK_SQUARE = 0xFF;
@@ -41,8 +47,8 @@ private:
 	RACE_CHOICE race_choice;
 	unsigned free_cells;
 	Position* character_pos;
+	std::queue<Coordinates>* movingPath;
 	std::vector<Position*> monsters_list;
-
 public:
 	Maze();
 	Maze(const MAZE&, int, int, int);
@@ -71,9 +77,6 @@ private:
 	void setStartAndPortal();
 	void setCharacterCell(RACE_CHOICE);
 
-	//void generatePathEnchanter()const;
-	//void genetatePathMagus()const;
-
 	void spawnMonsters();
 	void spawnMonster();
 	bool canSpawn(unsigned, unsigned)const;
@@ -81,6 +84,17 @@ private:
 	void changeMonsterList(int, int, int, int);
 	void moveMonsters();
 	void moveMonster(int, int, int, int);
+
+	void generateMagusPath();
+	void DFS_iterative();		//Used for generating a path in maze going in a streight direction until a hidrance is met.
+
+	void generateEnchanterPath();
+	void pathTracing(const POSITIONS_INFO&);
+	void aStarAlgorithm();		//Use for generating the shortest path using additional heuristics for calculating the current shortest path to the sink node.
+	void initPositionInfo(POSITIONS_INFO&)const;
+	double calcHdist(int, int)const;
+
+	void moveCharacter();
 
 	bool BFS()const;
 	void BFS(std::queue<Coordinates>&)const;
@@ -98,14 +112,8 @@ private:
 	void chooseWhichCellsToBlock(unsigned);
 	bool validCellsToBlock(unsigned)const;
 	
-
 	bool validCoordinates(int, int)const;
 	bool alreadyBlocked(int, int)const;
 	bool alreadyOccupied(int, int)const;
-
-	void buildGraph()const;
-
-	//del after:
-	void printQ(std::queue<Coordinates>&)const;
-
+	bool isPortal(int, int)const;
 };

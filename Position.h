@@ -50,10 +50,9 @@ public:
 	void removeCharacter();
 	void setCharacter(RACE_CHOICE);
 	void setCharacterByReference(const Race&);
-	const Race& getCharacter()const;
+	Race& getCharacter()const;
 
-
-	void addMoovingPath(std::queue<Coordinates>*);
+	void addMovingPath(std::queue<Coordinates>*);
 	const Coordinates& getCharacterMove()const;
 
 	

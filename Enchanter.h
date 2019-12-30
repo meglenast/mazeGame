@@ -6,17 +6,12 @@
 class Enchanter : public Race
 {
 public:
-	Enchanter(RACE_CHOICE = ENCHANTER/*, int = -1, int = -1*/);
+	Enchanter(RACE_CHOICE = ENCHANTER);
 	Enchanter(const Race&);
 	Enchanter& operator=(const Enchanter&);
-
+	~Enchanter() = default;
 public:
 	const Coordinates& getMove();
-	//virtual void generateMovingPath();
-	//bool validMove(int, int)const;
-	//bool canReach(int, int)const;
-
-private:
 };
 
 

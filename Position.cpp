@@ -48,7 +48,7 @@ const Monster& Position::getMonsterByReference()const
 	return *monster;
 }
 
-const Race& Position::getCharacter()const
+Race& Position::getCharacter()const
 {
 	return *character;
 }
@@ -69,13 +69,12 @@ void Position::setMonsterByReference(const Monster& monster)
 {
 	this->monster = new Monster(monster);
 }
-
 void Position::setCharacterByReference(const Race& character)
 {
-	if (character.getRace() == ENCHANTER)
-		this->character = new Enchanter(character);
-	else if (character.getRace() == MAGUS)
+	if (character.getRace() == MAGUS)
 		this->character = new Magus(character);
+	else if (character.getRace() == ENCHANTER)
+		this->character = new Enchanter(character);
 }
 
 void Position::setMonster(unsigned x_coord, unsigned y_coord)
@@ -88,9 +87,9 @@ void Position::setPositionType(POS_TYPE pos_type)
 	position_type = pos_type;
 }
 
-void Position::addMoovingPath(std::queue<Coordinates>* moovingPath)
+void Position::addMovingPath(std::queue<Coordinates>* moovingPath)
 {
-	character->setMoovingPath(moovingPath);
+	character->setMovingPath(moovingPath);
 }
 
 const Coordinates& Position::getCharacterMove()const
