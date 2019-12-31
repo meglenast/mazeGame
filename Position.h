@@ -43,9 +43,10 @@ public:
 	Monster* getMonster()const;
 	const Monster& getMonsterByReference()const;
 	void removeMonster();
-	void setMonster(unsigned, unsigned);
+	void setMonster(unsigned, unsigned, bool);
 	void setMonsterByReference(const Monster&);
 	void setPositionType(POS_TYPE);
+	bool monsterIsBlocked()const;
 
 	void removeCharacter();
 	void setCharacter(RACE_CHOICE);

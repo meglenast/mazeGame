@@ -13,11 +13,12 @@ class Monster
 {
 private:
 	Coordinates position;
+	bool isBlocked;
 	enum MOVING_DIRECTION next_direction;
 public:
-	Monster(int= 0, int = 0, MOVING_DIRECTION = UP);
-	Monster(const Monster&) = default;
-	Monster& operator=(const Monster&) = default;
+	Monster(int= 0, int = 0, bool = false, MOVING_DIRECTION = UP);
+	Monster(const Monster&);
+	Monster& operator=(const Monster&);
 	~Monster() = default;
 public:
 	void changeDirection();
@@ -25,4 +26,5 @@ public:
 
 	const Coordinates& nextCoordinates()const;
 	const Coordinates& getCoordinates()const;
+	bool blocked()const;
 };

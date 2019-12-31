@@ -134,6 +134,11 @@ bool Maze::validMazeCheck()const
 	return true;
 }
 
+bool Maze::noEscapeCell(int x_coord, int y_coord)const
+{
+	return(canSpawn(x_coord - 1, y_coord) == false && canSpawn(x_coord + 1, y_coord) == false && canSpawn(x_coord, y_coord - 1) == false && canSpawn(x_coord, y_coord + 1) == false);
+}
+
 void Maze::setFreeCells(unsigned free_cells)
 {
 	this->free_cells = (free_cells - 2 - monsters);
@@ -236,6 +241,13 @@ void Maze::printCell(const Position& cell, char col)const
 	SetConsoleTextAttribute(color, 7);
 	return;
 	}
+	 if (cell.getPositionType() == START)
+	 {
+		 HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+		 SetConsoleTextAttribute(color, 3);
+		 std::cout << '@';
+		 SetConsoleTextAttribute(color, 7);
+	 }
 	if (cell.getPositionType() == EMPTY)
 	{
 		HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -537,7 +549,9 @@ void Maze::spawnMonster()
 
 		if (canSpawn(x_coord, y_coord))
 		{
-			field[x_coord][y_coord].setMonster(x_coord,y_coord);
+			if(noEscapeCell(x_coord, y_coord))
+				field[x_coord][y_coord].setMonster(x_coord, y_coord, true);
+			field[x_coord][y_coord].setMonster(x_coord,y_coord, false);
 			addMonsterToList(x_coord, y_coord);
 			break;
 		}
@@ -572,9 +586,12 @@ void Maze::moveMonsters()
 		Monster* curr_monster = monsters_list[iter]->getMonster();
 		while (true)
 		{
+			if (field[curr_monster->getCoordinates().getX()][curr_monster->getCoordinates().getY()].monsterIsBlocked())
+				break;
+
 			int curr_xCoord = curr_monster->nextCoordinates().getX();
 			int curr_yCoord = curr_monster->nextCoordinates().getY();
-			if(!validCellCheck(curr_xCoord, curr_yCoord) || alreadyBlocked(curr_xCoord, curr_yCoord) || alreadyOccupied(curr_xCoord, curr_yCoord))
+			if (!validCellCheck(curr_xCoord, curr_yCoord) || alreadyBlocked(curr_xCoord, curr_yCoord) || alreadyOccupied(curr_xCoord, curr_yCoord))
 			{
 				curr_monster->changeDirection();
 			}

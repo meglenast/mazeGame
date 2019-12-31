@@ -108,4 +108,5 @@ private:
 	bool alreadyBlocked(int, int)const;
 	bool alreadyOccupied(int, int)const;
 	bool isPortal(int, int)const;
+	bool noEscapeCell(int x_coord, int y_coord)const;
 };

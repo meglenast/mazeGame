@@ -53,7 +53,7 @@ struct PositionInformation		//Helper data  structure used for holding additional
 		adjecent_yCoord(adj_y)
 	{}
 
-	void setInfo(unsigned new_fDist, unsigned new_gDist, unsigned new_hDist, int new_adjX, int new_adjY)
+	void setInfo(float new_fDist, float new_gDist, float new_hDist, int new_adjX, int new_adjY)
 	{
 		f_distance = new_fDist;
 		g_distance = new_gDist;
@@ -66,10 +66,10 @@ struct PositionInformation		//Helper data  structure used for holding additional
 struct Asoc_pair_dist	//Helper data structure used for holding the temporary distance to a cell 
 						//while the A* algorithm is performing.
 {
-	unsigned f_dist;
+	float f_dist;
 	Coordinates coords;
 
-	Asoc_pair_dist(unsigned f_dist, Coordinates coords) :
+	Asoc_pair_dist(float f_dist, Coordinates coords) :
 		f_dist(f_dist),
 		coords(coords)
 	{}

@@ -25,7 +25,7 @@ bool Position::occupiedByCharacter()const
 
 bool Position::isBlocked()const
 {
-	return (position_type == BLOCKED || position_type == BLOCKED_BY_USER);//added bl by user
+	return (position_type == BLOCKED || position_type == BLOCKED_BY_USER);//added bl by userF
 }
 
 POS_TYPE Position::getPositionType()const
@@ -77,9 +77,14 @@ void Position::setCharacterByReference(const Race& character)
 		this->character = new Enchanter(character);
 }
 
-void Position::setMonster(unsigned x_coord, unsigned y_coord)
+void Position::setMonster(unsigned x_coord, unsigned y_coord, bool isBlocked)
 {
-	monster = new Monster(x_coord, y_coord);
+	monster = new Monster(x_coord, y_coord, isBlocked);
+}
+
+bool Position::monsterIsBlocked()const
+{
+	return monster->blocked();
 }
 
 void Position::setPositionType(POS_TYPE pos_type)
