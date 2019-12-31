@@ -1,8 +1,5 @@
 #include "Maze.h"
 
-int DX[] = {-1,0,0,1};
-int DY[] = {0,-1,1,0};
-
 Maze::Maze() :
 	x_size(0),
 	y_size(0),
@@ -53,8 +50,20 @@ bool Maze::startLevel(RACE_CHOICE race_choice)
 	setCharacterCell(race_choice);
 	print();
 	blockCells();
+
+
+
+	//here
+	pressAnyKeyToContinue();
+	clearConsole();
+	
 	spawnMonsters();
 	print();
+
+	//here
+	pressAnyKeyToContinue();
+	clearConsole();
+
 
 	return startGame();
 }
@@ -73,6 +82,12 @@ bool Maze::startGame()
 	{
 		moveCharacter();
 		moveMonsters();
+		
+		//here
+		pressAnyKeyToContinue();
+		clearConsole();
+
+
 		if (haveReachedPortal())
 		{
 			print();
@@ -80,10 +95,12 @@ bool Maze::startGame()
 		}
 		if (killedByMonster())
 		{
+			printTitel();
+			printGameOver();
 			print();
 			return false;
 		}
-		print();
+		//print();
 	}
 }
 
@@ -145,7 +162,7 @@ void Maze::printMaze()const
 
 void Maze::print()const
 {
-	//printTitel();
+	printTitel();
 	for (unsigned row_index = 0; row_index < field.size(); ++row_index)
 	{
 		if (row_index % 2 == 0)
@@ -345,7 +362,7 @@ bool Maze::markedUnvisited(VISITED_MATRIX& visited)const
 	*/
 	for (int row_index = 0; row_index < x_size; ++row_index)
 	{
-		vector<bool> curr_row;
+		std::vector<bool> curr_row;
 		for (int col_index = 0; col_index < y_size; ++col_index)
 		{
 			if (field[row_index][col_index].getPositionType() == UNDEFINED)
@@ -829,7 +846,7 @@ void Maze::initPositionInfo(POSITIONS_INFO& posInfo)const
 {
 	for (size_t row_index = 0; row_index < x_size; ++row_index)
 	{
-		vector<PositionInformation> curr_row;
+		std::vector<PositionInformation> curr_row;
 		for (size_t col_index = 0; col_index < y_size; ++col_index)
 		{
 			curr_row.push_back(PositionInformation(FLT_MAX, FLT_MAX, FLT_MAX, -1, -1));

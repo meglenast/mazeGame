@@ -5,23 +5,18 @@
 #include <stack>
 #include <set>
 
-#include <iostream>
 #include <ctime>
 #include <windows.h>
 #include <limits>
 
+#include "InterfaceFunctions.h"
 #include "Position.h"
 #include "Monster.h"
 #include "Coordinates.h"
 
-//fix this
-using std::vector;
-
-
-
-typedef vector<vector<Position>> MAZE;
-typedef vector<vector<bool>> VISITED_MATRIX;
-typedef vector<vector<PositionInformation>> POSITIONS_INFO;
+typedef std::vector<std::vector<Position>> MAZE;
+typedef std::vector<std::vector<bool>> VISITED_MATRIX;
+typedef std::vector<std::vector<PositionInformation>> POSITIONS_INFO;
 
 const int DIRECTIONS = 4;
 const int ONE_STEP   = 1;
@@ -29,13 +24,8 @@ const int ONE_STEP   = 1;
 const char WHITE_SQUARE = 0xDB;
 const char BLACK_SQUARE = 0xFF;
 
-//const Coordinates START = { 1,1 };
-//const Coordinates PORTAL = { n,m};
-
-//int DX[] = {-1,0,0,1};
-//int DY[] = {0,-1,1,0};
-
-
+const int DX[] = { -1,0,0,1 };
+const int DY[] = { 0,-1,1,0 };
 
 class Maze
 {
@@ -100,7 +90,6 @@ private:
 	void moveCharacter();
 
 	bool BFS()const;
-	void BFS(std::queue<Coordinates>&)const;
 	bool markedUnvisited(VISITED_MATRIX&)const;
 	bool validCellCheck(int,int)const;
 

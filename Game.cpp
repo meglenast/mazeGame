@@ -17,18 +17,6 @@ void Game::initGame()
 	startGame();
 }
 
-void Game::printLevels()
-{
-	vector<Maze> ::iterator iter;
-	iter = levels.begin();
-
-	while (iter != levels.end())
-	{
-		(*iter).print();
-		++iter;
-	}
-}
-
 //private:
 
 void Game::startGame()
@@ -39,19 +27,27 @@ void Game::startGame()
 		{
 			if (levels_cnt == levels.size() - 1)
 			{
-				std::cout << "WON\n";
-				//printWon();
+				clearConsole();
+				printTitel();
+				printWon();
+				pressAnyKeyToContinue();
+				clearConsole();
+				return;
 			}
 			else
 			{ 
-				std::cout << "NEXT_LEVEL\n";
-				//printNextLevelTransition();
+				clearConsole();
+				printTitel();
+				printNextLevel();
+				std::cout << "					--LEVEL: " << levels_cnt + 1 << "--\n";
+				pressAnyKeyToContinue();
 			}
+			clearConsole();
 		}
 		else
 		{
-			std::cout << "GAME OVER\n";
-			//printGameOver
+			printGameOver();
+			break;
 		}
 	}
 }
@@ -146,7 +142,7 @@ void Game::sortLevels()
 	mergeSort(levels, 0, levels.size() - 1);
 }
 
-void Game::merge(vector<Maze>& array, int left, int mid, int right)
+void Game::merge(std::vector<Maze>& array, int left, int mid, int right)
 {
 	int i, j, k;
 	int n1 = mid - left + 1;
@@ -193,7 +189,7 @@ void Game::merge(vector<Maze>& array, int left, int mid, int right)
 	}
 }
 
-void Game::mergeSort(vector<Maze>& array, int left, int right)
+void Game::mergeSort(std::vector<Maze>& array, int left, int right)
 {
 	if (left < right)
 	{
@@ -209,13 +205,12 @@ void Game::initRace()
 	std::string choice;
 	while (true)
 	{
-		std::cout << "		--Choose your race--\n";
 		printRaceOptions();
-		std::cout << "Your chooice: ";
+		std::cout << "					Your chooice: ";
 		std::cin >> choice;
 		if (!validRaceChoice(choice))
 		{
-			std::cout << "Invalid choice, please try again.\n";
+			std::cout << "						Invalid choice, please try again.\n";
 		}
 		else
 		{
@@ -223,6 +218,9 @@ void Game::initRace()
 		}
 	}
 	setRace(choice);
+
+	pressAnyKeyToContinue();
+	clearConsole();
 }
 
 void Game::setRace(const std::string race_input)
@@ -241,10 +239,4 @@ void Game::setRace(const std::string race_input)
 bool Game::validRaceChoice(const std::string choice)const
 {
 	return (!choice.compare("ENCHANTER") || !choice.compare("enchanter") || !choice.compare("MAGUS") || !choice.compare("magus"));
-}
-
-void Game::printRaceOptions()const
-{
-	std::cout << "		__RACE CHOICES:__\n";
-	std::cout << "-ENCHANTER\n-MAGUS\n";
 }
