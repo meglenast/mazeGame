@@ -1,19 +1,18 @@
-#pragma once
+#ifndef __COORDINATES__HEADER__INCLUDED__
+#define __COORDINATES__HEADER__INCLUDED__
 
 #include <limits>
 
-class Coordinates
+struct Coordinates
 {
-private:
 	int xCord;
 	int yCord;
-public:
 
 	Coordinates(int x = -1, int y = -1) :
 		xCord(x),
 		yCord(y)
 	{}
-
+	/*
 	Coordinates(const Coordinates& other) :
 		xCord(other.xCord),
 		yCord(other.yCord)
@@ -28,11 +27,7 @@ public:
 		}
 		return *this;
 	}
-
-	int getX()const { return xCord; }
-	int getY()const { return yCord; }
-	void setX(int x) { xCord = x; }
-	void setY(int y) { yCord = y; }
+	*/
 };
 
 struct PositionInformation		//Helper data  structure used for holding additional information for the cell 
@@ -61,6 +56,11 @@ struct PositionInformation		//Helper data  structure used for holding additional
 		adjecent_xCoord = new_adjX;
 		adjecent_yCoord = new_adjY;
 	}
+
+	bool operator<(const PositionInformation& other)const // Used when using std:set for A* implementation
+	{
+		return (f_distance < other.f_distance);
+	}
 };
 
 struct Asoc_pair_dist	//Helper data structure used for holding the temporary distance to a cell 
@@ -69,13 +69,14 @@ struct Asoc_pair_dist	//Helper data structure used for holding the temporary dis
 	float f_dist;
 	Coordinates coords;
 
-	Asoc_pair_dist(float f_dist, Coordinates coords) :
+	Asoc_pair_dist(float f_dist = 0.0, Coordinates coords = { 0, 0 }) :
 		f_dist(f_dist),
 		coords(coords)
 	{}
-
-	bool operator<(const Asoc_pair_dist& other)const
+	bool operator<(const Asoc_pair_dist& other)const // Used when using std:set for A* implementation
 	{
 		return (f_dist < other.f_dist);
 	}
 };
+
+#endif
