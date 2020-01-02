@@ -12,6 +12,11 @@ Game::Game() :
 void Game::initGame()
 {
 	initLevels();
+	if (levels.size() == 0)
+	{
+		std::cout << "Sorry, there are no valid mazes in the file.\n";
+		return;
+	}
 	sortLevels();
 	initRace();
 	startGame();
@@ -39,7 +44,7 @@ void Game::startGame()
 				clearConsole();
 				printTitel();
 				printNextLevel();
-				std::cout << "					--LEVEL: " << levels_cnt + 1 << "--\n";
+				std::cout << "					--LEVEL: " << levels_cnt + 2 << "--\n";
 				pressAnyKeyToContinue();
 			}
 			clearConsole();
@@ -47,6 +52,8 @@ void Game::startGame()
 		else
 		{
 			printGameOver();
+			pressAnyKeyToContinue();
+			clearConsole();
 			break;
 		}
 	}
@@ -74,14 +81,12 @@ void Game::initLevels()
 
 bool Game::readMaze(std::ifstream& file_name)
 {
-	int x_size, y_size, monsters;
+	size_t x_size, y_size, monsters;
 	file_name >> x_size;
 	unsigned free_cells_cnt = 0;
 
 	if (file_name.eof())
-	{
 		return false;
-	}
 
 	file_name>> y_size;
 
@@ -140,6 +145,7 @@ void Game::setCell(std::vector<Position>& curr_row, const char cell_value, int r
 void Game::sortLevels()
 {
 	mergeSort(levels, 0, levels.size() - 1);
+	//bubbleSort(levels);
 }
 
 void Game::merge(std::vector<Maze>& array, int left, int mid, int right)
@@ -197,6 +203,15 @@ void Game::mergeSort(std::vector<Maze>& array, int left, int right)
 		mergeSort(array, left, mid);
 		mergeSort(array, mid + 1, right);
 		merge(array, left, mid, right);
+	}
+}
+void Game::bubbleSort(std::vector<Maze>& array)
+{
+	for (int i = 0; i < array.size(); ++i)
+	{
+		for (int j = 0; j < array.size() - i - 1; ++j)
+			if (array[j + 1] < array[j])
+				std::swap(array[j + 1], array[j]);
 	}
 }
 

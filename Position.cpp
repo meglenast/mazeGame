@@ -8,9 +8,15 @@ Position::Position(Race* race, Monster* monster, POS_TYPE pos_type, const Coordi
 	symbol(symbol)
 {}
 
-
-//destructor!!!
-
+Position::~Position()
+{
+	if (!monster)
+		delete monster;
+	if (!character)
+		delete character;
+	monster   = nullptr;
+	character = nullptr;
+}
 //public:
 
 bool Position::occupiedByMonster()const
@@ -25,9 +31,8 @@ bool Position::occupiedByCharacter()const
 
 bool Position::isBlocked()const
 {
-	return (position_type == BLOCKED || position_type == BLOCKED_BY_USER);//added bl by userF
+	return (position_type == BLOCKED || position_type == BLOCKED_BY_USER);
 }
-
 POS_TYPE Position::getPositionType()const
 {
 	return position_type;
@@ -100,11 +105,6 @@ void Position::addMovingPath(std::queue<Coordinates>* moovingPath)
 const Coordinates& Position::getCharacterMove()const
 {
 	return character->getMove();
-}
-
-void Position::calculateMoves()const
-{
-	//character->generateMovingPath();
 }
 
 void Position::removeMonster()

@@ -6,26 +6,9 @@ Monster::Monster(int x_coord, int y_coord, bool isBlocked, MOVING_DIRECTION dire
 	next_direction(direction)
 {}
 
-Monster::Monster(const Monster& other) :
-	position(other.position),
-	isBlocked(other.isBlocked),
-	next_direction(other.next_direction)
-{}
-
-Monster& Monster:: operator=(const Monster& other)
-{
-	if (this != &other)
-	{
-		position = other.position;
-		isBlocked = other.isBlocked;
-		next_direction = other.next_direction;
-	}
-	return *this;
-}
-
 //public:
 
-void Monster::changeDirection()									 //cChanges the moving direction when reached a hidrance cell or a blocked by the player cell
+void Monster::changeDirection()									 //Changes the moving direction when reached a hidrance cell or a blocked by the player cell
 {
 	if (next_direction == UP)
 			next_direction = LEFT;
@@ -39,34 +22,34 @@ void Monster::changeDirection()									 //cChanges the moving direction when re
 
 void Monster::changeCoordinates(int x_coord,int y_coord)
 {
-	position.setX(x_coord);
-	position.setY(y_coord);
+	position.xCord = x_coord;
+	position.yCord = y_coord;
 }
 
 const Coordinates& Monster::nextCoordinates()const
 {
 	if (next_direction == UP)
 	{
-		int new_x = position.getX() - 1;
-		int new_y = position.getY();
+		int new_x = position.xCord - 1;
+		int new_y = position.yCord;
 		return Coordinates(new_x, new_y);
 	}
 	else if (next_direction == LEFT)
 	{
-		int new_x = position.getX();
-		int new_y = position.getY() - 1;
+		int new_x = position.xCord;
+		int new_y = position.yCord - 1;
 		return Coordinates(new_x, new_y);
 	}
 	else if (next_direction == DOWN)
 	{
-		int new_x = position.getX() + 1;
-		int new_y = position.getY();
+		int new_x = position.xCord + 1;
+		int new_y = position.yCord;
 		return Coordinates(new_x, new_y);
 	}
 	else if (next_direction == RIGHT)
 	{
-		int new_x = position.getX();
-		int new_y = position.getY() + 1;
+		int new_x = position.xCord;
+		int new_y = position.yCord + 1;
 		return Coordinates(new_x, new_y);
 	}
 }

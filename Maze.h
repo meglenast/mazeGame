@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __MAZE__HEADER__INCLUDED__
+#define __MAZE__HEADER__INCLUDED__
 
 #include <vector>
 #include <queue>
@@ -6,13 +7,9 @@
 #include <set>
 
 #include <ctime>
-#include <windows.h>
-#include <limits>
 
 #include "InterfaceFunctions.h"
 #include "Position.h"
-#include "Monster.h"
-#include "Coordinates.h"
 
 typedef std::vector<std::vector<Position>> MAZE;
 typedef std::vector<std::vector<bool>> VISITED_MATRIX;
@@ -31,8 +28,8 @@ class Maze
 {
 private:
 	MAZE field;
-	int x_size;
-	int y_size;
+	size_t x_size;
+	size_t y_size;
 	int monsters;
 	RACE_CHOICE race_choice;
 	unsigned free_cells;
@@ -42,20 +39,17 @@ private:
 public:
 	Maze();
 	Maze(const MAZE&, int, int, int);
-	~Maze() = default;
-	Maze(const Maze&);
-	Maze& operator=(const Maze&);
-	
+	Maze(const Maze&) = default;
+	Maze& operator=(const Maze&) = default;
+	~Maze();
 public:
+	bool startLevel(RACE_CHOICE);
+
 	bool validMazeCheck()const;
 	bool operator<(const Maze&)const;
 
 	inline int getSize()const;
 	inline int getMonsters()const;
-
-	void print()const;//move after in private
-
-	bool startLevel(RACE_CHOICE);
 
 	void setFreeCells(unsigned);
 
@@ -80,6 +74,7 @@ private:
 
 	void generateMagusPath();
 	void DFS_iterative();		//Used for generating a path in maze going in a streight direction until a hidrance is met.
+	void changeMagusDirection(MOVING_DIRECTION&)const;
 
 	void generateEnchanterPath();
 	void pathTracing(const POSITIONS_INFO&);
@@ -93,10 +88,11 @@ private:
 	bool markedUnvisited(VISITED_MATRIX&)const;
 	bool validCellCheck(int,int)const;
 
+	void print()const;
+	void printColNumbers()const;
 	void printRow(int, char, char)const;
 	void printExtraRow(char, char)const;
 	void printCell(const Position&, char)const;
-	void printMaze()const;
 
 	void blockCells();
 	void blockCell();
@@ -110,3 +106,5 @@ private:
 	bool isPortal(int, int)const;
 	bool noEscapeCell(int x_coord, int y_coord)const;
 };
+
+#endif

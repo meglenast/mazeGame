@@ -1,6 +1,5 @@
-#pragma once
-
-#include <queue>
+#ifndef __POSITION__HEADER__INCLUDED__
+#define __POSITION__HEADER__INCLUDED__
 
 #include "Enchanter.h"
 #include "Magus.h"
@@ -26,8 +25,8 @@ private:
 	char symbol;
 
 public:
-	Position(Race* = nullptr, Monster* = nullptr, POS_TYPE = UNDEFINED, const Coordinates & = { 0,0 },char = '.');
-	~Position() = default;
+	Position(Race* = nullptr, Monster* = nullptr, POS_TYPE = EMPTY, const Coordinates & = { 0,0 },char = '.');
+	~Position();
 	Position(const Position&) = default;
 	Position& operator=(const Position&) = default;
 
@@ -55,8 +54,6 @@ public:
 
 	void addMovingPath(std::queue<Coordinates>*);
 	const Coordinates& getCharacterMove()const;
-
-	
-
-	void calculateMoves()const;
 };
+
+#endif

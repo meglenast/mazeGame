@@ -14,5 +14,4 @@ public:
 	const Coordinates& getMove();
 };
 
-
 #endif

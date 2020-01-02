@@ -1,9 +1,9 @@
-#pragma once
-
-#include <queue>
+#ifndef __RACE__HEADER__INCLUDED__
+#define __RACE__HEADER__INCLUDED__
 
 //del
-#include <iostream>
+//#include <iostream>
+#include <queue>
 
 #include "Coordinates.h"
 
@@ -19,26 +19,19 @@ class Race
 {
 protected:
 	RACE_CHOICE race;
-	std::queue<Coordinates>* moovingPath;
-	//Coordinates position;
+	std::queue<Coordinates>* movingPath;
 public:
 	Race(RACE_CHOICE = INVALID);
 	Race(const Race&);
 	Race& operator=(const Race&) = default;
 	virtual ~Race() = default;
-public:
 
-	//virtual void generateMovingPath() = 0;
-	//const Coordinates& getPosition()const;
-	void setMoovingPath(std::queue<Coordinates>*);
-	virtual const Coordinates& getMove()=0;
+public:
+	virtual const Coordinates& getMove() = 0;
+
+	void setMovingPath(std::queue<Coordinates>*);
 
 	RACE_CHOICE getRace()const;
-
-
-	//void setPosition(int, int);
-private:
-	/*
-	 ...
-	*/
 };
+
+#endif

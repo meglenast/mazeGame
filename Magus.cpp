@@ -19,7 +19,7 @@ Magus& Magus::operator=(const Magus& other)
 
 const Coordinates& Magus::getMove()
 {
-	Coordinates curr_move = moovingPath->front();
-	moovingPath->pop();
+	Coordinates curr_move = movingPath->front();
+	movingPath->pop();
 	return curr_move;
 }

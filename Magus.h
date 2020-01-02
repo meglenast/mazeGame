@@ -12,11 +12,6 @@ public:
 
 public:
 	const Coordinates& getMove();
-	//bool validMove(int, int)const;
-	//bool canReach(int, int)const;
-	//virtual void generateMovingPath();
-private:
 };
-
 
 #endif

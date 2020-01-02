@@ -1,6 +1,8 @@
-#pragma once
+#ifndef __MONSTER__HEADER__INCLUDED__
+#define __MONSTER__HEADER__INCLUDED__
 
 #include "Coordinates.h"
+
 enum MOVING_DIRECTION
 {
 	UP = 0,
@@ -17,8 +19,8 @@ private:
 	enum MOVING_DIRECTION next_direction;
 public:
 	Monster(int= 0, int = 0, bool = false, MOVING_DIRECTION = UP);
-	Monster(const Monster&);
-	Monster& operator=(const Monster&);
+	Monster(const Monster&) = default;
+	Monster& operator=(const Monster&) = default;
 	~Monster() = default;
 public:
 	void changeDirection();
@@ -28,3 +30,5 @@ public:
 	const Coordinates& getCoordinates()const;
 	bool blocked()const;
 };
+
+#endif

@@ -12,22 +12,6 @@ struct Coordinates
 		xCord(x),
 		yCord(y)
 	{}
-	/*
-	Coordinates(const Coordinates& other) :
-		xCord(other.xCord),
-		yCord(other.yCord)
-	{}
-
-	Coordinates& operator=(const Coordinates& other)
-	{
-		if (this != &other)
-		{
-			xCord = other.xCord;
-			yCord = other.yCord;
-		}
-		return *this;
-	}
-	*/
 };
 
 struct PositionInformation		//Helper data  structure used for holding additional information for the cell 

@@ -2,22 +2,22 @@
 
 Race::Race(RACE_CHOICE choice) :
 	race(choice),
-	moovingPath(nullptr)
+	movingPath(nullptr)
 {}
 
 Race::Race(const Race& other) :
 	race(other.race),
-	moovingPath(other.moovingPath)
+	movingPath(other.movingPath)
 {}
 
 //public:
 
-void Race::setMoovingPath(std::queue<Coordinates>* moovingPath)
-{
-	this->moovingPath = moovingPath;
-}
-
 RACE_CHOICE Race::getRace()const
 {
 	return race;
+}
+
+void Race::setMovingPath(std::queue<Coordinates>* movingPath)
+{
+	this->movingPath = movingPath;
 }
